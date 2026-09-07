@@ -6,7 +6,7 @@ import { SELECTORS } from './constants/selectors'
 
 const PG = SELECTORS.PLATE_GENERATOR
 
-test.describe('Plate Generator', () => {
+test.describe.skip('Plate Generator (removed from this fork; YAKB is the plate engine)', () => {
   test('shows idle state when section is expanded', async ({ page }) => {
     const editor = new KeyboardEditorPage(page)
     await editor.goto()

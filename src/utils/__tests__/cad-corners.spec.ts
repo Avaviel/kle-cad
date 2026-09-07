@@ -2,13 +2,18 @@ import { describe, it, expect } from 'vitest'
 import { Key } from '@adamws/kle-serial'
 import {
   applyCornerFields,
+  buildZoneOutline,
+  convexHull,
   cornerLabel,
+  DEFAULT_ZONE_SETTINGS,
   hydrateCorners,
   injectCadCornerProps,
   isCorner,
   nextCornerIndex,
   nextNewZone,
+  offsetPolygon,
   parseCornerLegend,
+  roundedPolygonCommands,
   usedZones,
   zoneColor,
 } from '../cad-corners'
@@ -65,5 +70,64 @@ describe('cad-corners', () => {
     expect(zoneColor(1)).toBe('#e91e63')
     expect(zoneColor(9)).toBe(zoneColor(1))
     expect(cornerLabel(1, 0)).toBe('Z1.0')
+  })
+
+  it('convex hull drops interior points', () => {
+    const hull = convexHull([
+      { x: 0, y: 0 },
+      { x: 10, y: 0 },
+      { x: 10, y: 10 },
+      { x: 0, y: 10 },
+      { x: 5, y: 5 },
+    ])
+    expect(hull).toHaveLength(4)
+    expect(hull.some((p) => p.x === 5 && p.y === 5)).toBe(false)
+  })
+
+  it('offsetPolygon grows a square outward', () => {
+    const grown = offsetPolygon(
+      [
+        { x: 0, y: 0 },
+        { x: 10, y: 0 },
+        { x: 10, y: 10 },
+        { x: 0, y: 10 },
+      ],
+      1,
+    )
+    const xs = grown.map((p) => p.x)
+    const ys = grown.map((p) => p.y)
+    expect(Math.min(...xs)).toBeLessThan(0)
+    expect(Math.max(...xs)).toBeGreaterThan(10)
+    expect(Math.min(...ys)).toBeLessThan(0)
+    expect(Math.max(...ys)).toBeGreaterThan(10)
+  })
+
+  it('roundedPolygonCommands uses quadratic fillets', () => {
+    const cmds = roundedPolygonCommands(
+      [
+        { x: 0, y: 0 },
+        { x: 20, y: 0 },
+        { x: 20, y: 20 },
+        { x: 0, y: 20 },
+      ],
+      4,
+    )
+    expect(cmds.some((c) => c.type === 'quad')).toBe(true)
+    expect(cmds[0]?.type).toBe('move')
+  })
+
+  it('buildZoneOutline applies default offset in px', () => {
+    const outline = buildZoneOutline(
+      [
+        { x: 0, y: 0 },
+        { x: 100, y: 0 },
+        { x: 100, y: 100 },
+        { x: 0, y: 100 },
+      ],
+      DEFAULT_ZONE_SETTINGS,
+      1,
+    )
+    expect(outline.length).toBeGreaterThanOrEqual(4)
+    expect(Math.min(...outline.map((p) => p.x))).toBeLessThan(0)
   })
 })

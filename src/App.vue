@@ -6,16 +6,11 @@ import KeyPropertiesPanel from './components/KeyPropertiesPanel.vue'
 import KeyboardMetadataPanel from './components/KeyboardMetadataPanel.vue'
 import SummaryPanel from './components/SummaryPanel.vue'
 import JsonEditorPanel from './components/JsonEditorPanel.vue'
-import PcbGeneratorPanel from './components/PcbGeneratorPanel.vue'
-import PlateGeneratorPanel from './components/PlateGeneratorPanel.vue'
 import LayoutEditorSettingsPanel from './components/LayoutEditorSettingsPanel.vue'
 import AppFooter from './components/AppFooter.vue'
 import CanvasToolbar from './components/CanvasToolbar.vue'
 import CanvasFooter from './components/CanvasFooter.vue'
 import CanvasHelpModal from './components/CanvasHelpModal.vue'
-import PcbHelpModal from './components/PcbHelpModal.vue'
-import PlateHelpModal from './components/PlateHelpModal.vue'
-import PcbSettingsModal from './components/PcbSettingsModal.vue'
 import ToastContainer from './components/ToastContainer.vue'
 import AccountMenu from './components/AccountMenu.vue'
 import GitHubStarPopup from './components/GitHubStarPopup.vue'
@@ -30,7 +25,6 @@ import { preloadErgogenModule } from '@/utils/ergogen-loader'
 
 import BiChevronDown from 'bootstrap-icons/icons/chevron-down.svg'
 import BiChevronUp from 'bootstrap-icons/icons/chevron-up.svg'
-import BiGear from 'bootstrap-icons/icons/gear.svg'
 import BiGripVertical from 'bootstrap-icons/icons/grip-vertical.svg'
 import BiQuestionCircle from 'bootstrap-icons/icons/question-circle.svg'
 
@@ -52,9 +46,6 @@ watch(
     }
   },
 )
-
-// Check if running in production mode (hide debug features)
-const isProduction = import.meta.env.PROD
 
 // Initialize theme composable (theme will be initialized automatically on mount)
 useTheme()
@@ -83,7 +74,8 @@ onUnmounted(() => {
   window.removeEventListener('beforeunload', handleBeforeUnload)
 })
 
-const sectionOrder = ref(['canvas', 'properties', 'json', 'plate', 'pcb'])
+const CORE_SECTIONS = ['canvas', 'properties', 'json']
+const sectionOrder = ref([...CORE_SECTIONS])
 const draggedSection = ref<string | null>(null)
 const dragOverSection = ref<string | null>(null)
 const isDraggingSection = ref(false)
@@ -96,8 +88,6 @@ const collapsedSections = ref<Record<string, boolean>>({
   properties: false,
   canvas: false,
   json: false,
-  pcb: false,
-  plate: false,
 })
 
 onMounted(() => {
@@ -111,15 +101,11 @@ onMounted(() => {
       const parsedOrder = JSON.parse(savedOrder)
       if (Array.isArray(parsedOrder)) {
         // Backward compatibility: add missing sections
-        const order = [...parsedOrder]
-        if (!order.includes('pcb')) {
-          order.push('pcb')
+        const order = parsedOrder.filter((id: string) => CORE_SECTIONS.includes(id))
+        for (const id of CORE_SECTIONS) {
+          if (!order.includes(id)) order.push(id)
         }
-        if (!order.includes('plate')) {
-          order.push('plate')
-        }
-        // Only use saved order if it has the expected sections
-        if (order.length === 5) {
+        if (order.length === CORE_SECTIONS.length) {
           sectionOrder.value = order
         }
       }
@@ -268,16 +254,6 @@ const sections = computed(() => ({
     title: 'JSON Editor',
     component: 'JsonEditorPanel',
   },
-  pcb: {
-    id: 'pcb',
-    title: 'PCB Generator',
-    component: 'PcbGeneratorPanel',
-  },
-  plate: {
-    id: 'plate',
-    title: 'Plate Generator',
-    component: 'PlateGeneratorPanel',
-  },
 }))
 
 // Get ordered sections
@@ -294,39 +270,6 @@ const showHelp = () => {
 
 const closeHelp = () => {
   isHelpVisible.value = false
-}
-
-// PCB Help modal state
-const isPcbHelpVisible = ref(false)
-
-const showPcbHelp = () => {
-  isPcbHelpVisible.value = true
-}
-
-const closePcbHelp = () => {
-  isPcbHelpVisible.value = false
-}
-
-// Plate Help modal state
-const isPlateHelpVisible = ref(false)
-
-const showPlateHelp = () => {
-  isPlateHelpVisible.value = true
-}
-
-const closePlateHelp = () => {
-  isPlateHelpVisible.value = false
-}
-
-// PCB Settings modal state
-const isPcbSettingsVisible = ref(false)
-
-const showPcbSettings = () => {
-  isPcbSettingsVisible.value = true
-}
-
-const closePcbSettings = () => {
-  isPcbSettingsVisible.value = false
 }
 
 // Conservative minimum to ensure all tools fit comfortably
@@ -478,33 +421,6 @@ const isLayoutEditorSettingsOpen = ref(false)
               >
                 <BiQuestionCircle />
               </button>
-              <!-- Help button for PCB Generator section -->
-              <button
-                v-if="section.id === 'pcb'"
-                @click.stop="showPcbHelp"
-                class="btn btn-outline-secondary help-btn"
-                title="Help"
-              >
-                <BiQuestionCircle />
-              </button>
-              <!-- Help button for Plate Generator section -->
-              <button
-                v-if="section.id === 'plate'"
-                @click.stop="showPlateHelp"
-                class="btn btn-outline-secondary help-btn"
-                title="Help"
-              >
-                <BiQuestionCircle />
-              </button>
-              <!-- Settings button only for PCB Generator section (debug/preview mode only) -->
-              <button
-                v-if="section.id === 'pcb' && !isProduction"
-                @click.stop="showPcbSettings"
-                class="btn btn-outline-secondary settings-btn"
-                title="Settings"
-              >
-                <BiGear />
-              </button>
               <button
                 @click.stop="toggleSectionCollapse(section.id)"
                 class="btn btn-outline-secondary collapse-btn"
@@ -580,22 +496,6 @@ const isLayoutEditorSettingsOpen = ref(false)
           >
             <JsonEditorPanel />
           </div>
-
-          <!-- PCB Generator Section -->
-          <div
-            v-else-if="section.id === 'pcb' && !collapsedSections[section.id]"
-            class="card-body p-0"
-          >
-            <PcbGeneratorPanel />
-          </div>
-
-          <!-- Plate Generator Section -->
-          <div
-            v-else-if="section.id === 'plate' && !collapsedSections[section.id]"
-            class="card-body p-0"
-          >
-            <PlateGeneratorPanel />
-          </div>
         </div>
       </div>
     </main>
@@ -605,15 +505,6 @@ const isLayoutEditorSettingsOpen = ref(false)
 
     <!-- Canvas Help Modal -->
     <CanvasHelpModal :is-visible="isHelpVisible" @close="closeHelp" />
-
-    <!-- PCB Help Modal -->
-    <PcbHelpModal :is-visible="isPcbHelpVisible" @close="closePcbHelp" />
-
-    <!-- Plate Help Modal -->
-    <PlateHelpModal :is-visible="isPlateHelpVisible" @close="closePlateHelp" />
-
-    <!-- PCB Settings Modal -->
-    <PcbSettingsModal :is-visible="isPcbSettingsVisible" @close="closePcbSettings" />
 
     <!-- Toast Notifications -->
     <ToastContainer />

@@ -13,9 +13,12 @@ import { BoundsCalculator } from './utils/BoundsCalculator'
 import { HitTester } from './utils/HitTester'
 import type { LabelNode } from './parsers/LabelAST'
 import {
+  buildZoneOutline,
   getCornerIndex,
   getCornerZone,
+  getZoneSettings,
   isCorner,
+  roundedPolygonCommands,
   zoneColor,
 } from './cad-corners'
 
@@ -447,7 +450,7 @@ export class CanvasRenderer {
       this.drawKey(key, true, false, hoveredLinkHref)
     })
 
-    this.drawZoneOverlay(keys)
+    this.drawZoneOverlay(keys, metadata)
 
     if (showCornerMarkers) {
       cornerKeys.forEach((key) => this.drawKey(key, false, false, hoveredLinkHref, false))
@@ -496,7 +499,7 @@ export class CanvasRenderer {
     return { x, y }
   }
 
-  private drawZoneOverlay(keys: Key[]): void {
+  private drawZoneOverlay(keys: Key[], metadata: KeyboardMetadata): void {
     const byZone = new Map<number, { index: number; x: number; y: number }[]>()
     for (const key of keys) {
       if (!isCorner(key)) continue
@@ -507,18 +510,29 @@ export class CanvasRenderer {
       byZone.set(zone, list)
     }
 
+    const mmToPx = this.options.unit / 19.05
     const ctx = this.ctx
-    for (const [zone, pts] of byZone) {
-      pts.sort((a, b) => a.index - b.index)
-      if (pts.length < 2) continue
+    for (const [zone, raw] of byZone) {
+      raw.sort((a, b) => a.index - b.index)
+      if (raw.length < 2) continue
+      const settings = getZoneSettings(metadata, zone)
+      const outline = buildZoneOutline(
+        raw.map((p) => ({ x: p.x, y: p.y })),
+        settings,
+        mmToPx,
+      )
+      const filletPx = settings.fillet * mmToPx
+      const cmds = roundedPolygonCommands(outline, filletPx)
+      if (cmds.length === 0) continue
       ctx.save()
       ctx.setLineDash([6, 4])
       ctx.strokeStyle = zoneColor(zone)
       ctx.lineWidth = 2
       ctx.beginPath()
-      ctx.moveTo(pts[0]!.x, pts[0]!.y)
-      for (let i = 1; i < pts.length; i++) {
-        ctx.lineTo(pts[i]!.x, pts[i]!.y)
+      for (const cmd of cmds) {
+        if (cmd.type === 'move') ctx.moveTo(cmd.x, cmd.y)
+        else if (cmd.type === 'line') ctx.lineTo(cmd.x, cmd.y)
+        else ctx.quadraticCurveTo(cmd.cx, cmd.cy, cmd.x, cmd.y)
       }
       ctx.closePath()
       ctx.stroke()
