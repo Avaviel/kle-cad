@@ -15,6 +15,7 @@ import {
   parseCornerLegend,
   roundedPolygonCommands,
   usedZones,
+  cornersInZone,
   zoneColor,
 } from '../cad-corners'
 
@@ -54,6 +55,8 @@ describe('cad-corners', () => {
     expect(nextCornerIndex([a, b], 1)).toBe(3)
     expect(nextNewZone([a, b])).toBe(2)
     expect(usedZones([a, b])).toEqual([1])
+    expect(cornersInZone([a, b], 1)).toBe(2)
+    expect(cornersInZone([a, b], 2)).toBe(0)
   })
 
   it('injects _z/_zi onto compact KLE next to Z#.# legends', () => {

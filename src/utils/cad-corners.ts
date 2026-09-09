@@ -97,6 +97,14 @@ export function usedZones(keys: Key[]): number[] {
   return [...set].sort((a, b) => a - b)
 }
 
+export function cornersInZone(keys: Key[], zone: number): number {
+  let n = 0
+  for (const key of keys) {
+    if (getCornerZone(key) === zone) n++
+  }
+  return n
+}
+
 export function cornerLabelsFor(zone: number, index: number): Array12<string> {
   const labels = createEmptyLabels()
   labels[4] = cornerLabel(zone, index)

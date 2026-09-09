@@ -40,6 +40,7 @@ import {
   nextNewZone,
   usedZones,
   zoneColor,
+  type ZoneSettings,
 } from '../utils/cad-corners'
 import {
   transformRotationOrigin as transformRotationOriginUtil,
@@ -354,6 +355,18 @@ export const useKeyboardStore = defineStore('keyboard', () => {
       _z: z,
       _zi: index,
     })
+  }
+
+  const updateZoneSetting = (zone: number, patch: Partial<ZoneSettings>) => {
+    ensureZoneMeta(metadata.value, zone)
+    const rec = metadata.value as KeyboardMetadata & { _zones: Record<string, ZoneSettings> }
+    const z = String(zone)
+    rec._zones = {
+      ...rec._zones,
+      [z]: { ...rec._zones[z]!, ...patch },
+    }
+    metadata.value = { ...rec }
+    saveState()
   }
 
   const deleteKeys = () => {
@@ -1767,6 +1780,7 @@ export const useKeyboardStore = defineStore('keyboard', () => {
     addCorner,
     cornerZoneChoices,
     nextCornerZone,
+    updateZoneSetting,
     deleteKeys,
     selectKey,
     selectAll,
