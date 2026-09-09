@@ -184,7 +184,7 @@ import { renderScheduler } from '@/utils/utils/RenderScheduler'
 import { D } from '@/utils/decimal-math'
 import { keyIntersectsSelection } from '@/utils/geometry'
 import { hexToRgb } from '@/utils/color-utils'
-import { parseBorderRadius, createRoundedRectanglePath } from '@/utils/border-radius'
+
 import { extractKleLayoutWithFallback } from '@/utils/pixel-metadata'
 import { parseJsonString } from '@/utils/serialization'
 import { isCorner } from '@/utils/cad-corners'
@@ -740,10 +740,11 @@ const calculateAllBounds = () => {
     maxX = -Infinity,
     maxY = -Infinity
 
+  const unit = renderOptions.value.unit
+
   // Process regular keys
   keyboardStore.keys.forEach((key) => {
     const keyBounds = renderer.value!.calculateRotatedKeyBounds(key)
-    const unit = renderOptions.value.unit
     const keyMinX = keyBounds.minX / unit
     const keyMinY = keyBounds.minY / unit
     const keyMaxX = keyBounds.maxX / unit
@@ -754,6 +755,18 @@ const calculateAllBounds = () => {
     maxX = Math.max(maxX, keyMaxX)
     maxY = Math.max(maxY, keyMaxY)
   })
+
+  // Module outlines (offset + fillet) sit outside the keys; include them so
+  // the dashed path is not clipped on the right/bottom.
+  for (const point of renderer.value.collectZoneOutlinePoints(
+    keyboardStore.keys,
+    keyboardStore.metadata,
+  )) {
+    minX = Math.min(minX, point.x / unit)
+    minY = Math.min(minY, point.y / unit)
+    maxX = Math.max(maxX, point.x / unit)
+    maxY = Math.max(maxY, point.y / unit)
+  }
 
   return { minX, minY, maxX, maxY }
 }
@@ -995,22 +1008,15 @@ const renderKeyboard = (options?: { skipContainerBackground?: boolean }) => {
       // Apply DPI scaling for background drawing
       ctx.scale(dpr, dpr)
 
-      // Fill with background color, applying border radius (default 6px like original KLE)
-      const radiiValue = keyboardStore.metadata.radii?.trim() || '6px'
-
-      // Fill entire canvas with container background color first
-      // Skip when rendering for export to preserve background transparency
+      // One flat gray field — no inner white keyboard plate. Skip on export
+      // so PNG/SVG keep a transparent surround.
       if (!options?.skipContainerBackground) {
-        const containerColor = getComputedStyle(containerRef.value!).backgroundColor
+        const containerColor = containerRef.value
+          ? getComputedStyle(containerRef.value).backgroundColor
+          : '#e9ecef'
         ctx.fillStyle = containerColor
         ctx.fillRect(0, 0, canvasWidth.value, canvasHeight.value)
       }
-
-      // Then draw rounded rectangle with keyboard background color on top
-      ctx.fillStyle = renderOptions.value.background
-      const corners = parseBorderRadius(radiiValue, canvasWidth.value, canvasHeight.value)
-      createRoundedRectanglePath(ctx, 0, 0, canvasWidth.value, canvasHeight.value, corners)
-      ctx.fill()
       ctx.restore()
 
       // Apply transformations before rendering
@@ -2388,7 +2394,7 @@ defineExpose({})
 
 .keyboard-canvas {
   border: none;
-  background: white;
+  background: transparent;
   display: block;
   cursor: crosshair;
   outline: none;

@@ -1,6 +1,6 @@
 import type { Key, KeyboardMetadata } from '@adamws/kle-serial'
 import { D } from './decimal-math'
-import { parseBorderRadius, createRoundedRectanglePath } from './border-radius'
+
 import { svgCache } from './caches/SVGCache'
 import { parseCache } from './caches/ParseCache'
 import { imageCache } from './caches/ImageCache'
@@ -366,21 +366,8 @@ export class CanvasRenderer {
     // Clear canvas if requested
     if (clearCanvas) {
       this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height)
-
-      // Fill with background color, applying border radius (default 6px like original KLE)
       this.ctx.fillStyle = this.options.background
-
-      const radiiValue = metadata.radii?.trim() || '6px'
-      const corners = parseBorderRadius(radiiValue, this.ctx.canvas.width, this.ctx.canvas.height)
-      createRoundedRectanglePath(
-        this.ctx,
-        0,
-        0,
-        this.ctx.canvas.width,
-        this.ctx.canvas.height,
-        corners,
-      )
-      this.ctx.fill()
+      this.ctx.fillRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height)
     }
 
     this.ctx.save()
@@ -497,6 +484,36 @@ export class CanvasRenderer {
       y = oy + dx * Math.sin(rad) + dy * Math.cos(rad)
     }
     return { x, y }
+  }
+
+  public collectZoneOutlinePoints(
+    keys: Key[],
+    metadata: KeyboardMetadata,
+  ): { x: number; y: number }[] {
+    const byZone = new Map<number, { index: number; x: number; y: number }[]>()
+    for (const key of keys) {
+      if (!isCorner(key)) continue
+      const zone = getCornerZone(key)
+      const center = this.keyCenter(key)
+      const list = byZone.get(zone) || []
+      list.push({ index: getCornerIndex(key), ...center })
+      byZone.set(zone, list)
+    }
+
+    const mmToPx = this.options.unit / 19.05
+    const points: { x: number; y: number }[] = []
+    for (const [zone, raw] of byZone) {
+      raw.sort((a, b) => a.index - b.index)
+      if (raw.length < 2) continue
+      const settings = getZoneSettings(metadata, zone)
+      const outline = buildZoneOutline(
+        raw.map((p) => ({ x: p.x, y: p.y })),
+        settings,
+        mmToPx,
+      )
+      points.push(...outline)
+    }
+    return points
   }
 
   private drawZoneOverlay(keys: Key[], metadata: KeyboardMetadata): void {

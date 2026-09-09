@@ -64,7 +64,7 @@ describe('CanvasToolbar', () => {
       expect(newKey!.labels[4]).toBe('Enter')
     })
 
-    it('should add a CAD corner from the Corners section', async () => {
+    it('should add a CAD corner from the Modules section', async () => {
       const wrapper = mount(CanvasToolbar, {
         global: {
           plugins: [createPinia()],
@@ -124,13 +124,13 @@ describe('CanvasToolbar', () => {
       })
 
       const sections = wrapper.findAll('.toolbar-section')
-      // Edit, Corners, Tools, History. Extra tools stay in the Tools dropdown.
+      // Edit, Modules, Tools, History. Extra tools stay in the Tools dropdown.
       expect(sections.length).toBe(4)
 
       const labels = sections.map((section) => section.find('.section-label').text())
       expect(labels).toContain('Tools')
       expect(labels).toContain('Edit')
-      expect(labels).toContain('Corners')
+      expect(labels).toContain('Modules')
       expect(labels).toContain('History')
     })
 

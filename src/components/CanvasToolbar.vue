@@ -22,7 +22,6 @@
 
         <ToolbarCornersSection
           :zone-choices="keyboardStore.cornerZoneChoices"
-          :next-new-zone="keyboardStore.nextCornerZone"
           :show-markers="layoutEditorSettingsStore.showCornerMarkers"
           @add-corner="addCorner"
           @toggle-markers="layoutEditorSettingsStore.toggleCornerMarkers"
@@ -68,7 +67,6 @@
         v-if="toolbarColumns === 1"
         :style="getSectionStyle(2)"
         :zone-choices="keyboardStore.cornerZoneChoices"
-        :next-new-zone="keyboardStore.nextCornerZone"
         :show-markers="layoutEditorSettingsStore.showCornerMarkers"
         @add-corner="addCorner"
         @toggle-markers="layoutEditorSettingsStore.toggleCornerMarkers"

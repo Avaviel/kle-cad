@@ -1,6 +1,6 @@
 <template>
   <div class="toolbar-section">
-    <label class="section-label">Corners</label>
+    <label class="section-label">Modules</label>
     <div class="tool-buttons">
       <div class="btn-group-vertical add-corner-group dropend">
         <button
@@ -27,12 +27,6 @@
           <li v-for="z in zoneChoices" :key="z">
             <button class="dropdown-item" @click="$emit('add-corner', z)">Module {{ z }}</button>
           </li>
-          <li><hr class="dropdown-divider" /></li>
-          <li>
-            <button class="dropdown-item" @click="$emit('add-corner', nextNewZone)">
-              New module ({{ nextNewZone }})
-            </button>
-          </li>
         </ul>
       </div>
 
@@ -58,7 +52,6 @@ import BiEyeSlash from 'bootstrap-icons/icons/eye-slash.svg'
 
 defineProps<{
   zoneChoices: number[]
-  nextNewZone: number
   showMarkers: boolean
 }>()
 
