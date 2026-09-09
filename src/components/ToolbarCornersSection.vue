@@ -16,21 +16,21 @@
           data-bs-toggle="dropdown"
           aria-expanded="false"
           data-testid="toolbar-add-corner-menu"
-          title="Add Corner to zone"
+          title="Add Corner to module"
         >
           <BiChevronDown />
         </button>
         <ul class="dropdown-menu">
           <li>
-            <h6 class="dropdown-header">Add to zone</h6>
+            <h6 class="dropdown-header">Add to module</h6>
           </li>
           <li v-for="z in zoneChoices" :key="z">
-            <button class="dropdown-item" @click="$emit('add-corner', z)">Zone {{ z }}</button>
+            <button class="dropdown-item" @click="$emit('add-corner', z)">Module {{ z }}</button>
           </li>
           <li><hr class="dropdown-divider" /></li>
           <li>
             <button class="dropdown-item" @click="$emit('add-corner', nextNewZone)">
-              New zone ({{ nextNewZone }})
+              New module ({{ nextNewZone }})
             </button>
           </li>
         </ul>

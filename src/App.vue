@@ -4,7 +4,7 @@ import KeyboardToolbar from './components/KeyboardToolbar.vue'
 import KeyboardCanvas from './components/KeyboardCanvas.vue'
 import KeyPropertiesPanel from './components/KeyPropertiesPanel.vue'
 import KeyboardMetadataPanel from './components/KeyboardMetadataPanel.vue'
-import SidesPanel from './components/SidesPanel.vue'
+import ModulesPanel from './components/ModulesPanel.vue'
 import SummaryPanel from './components/SummaryPanel.vue'
 import JsonEditorPanel from './components/JsonEditorPanel.vue'
 import LayoutEditorSettingsPanel from './components/LayoutEditorSettingsPanel.vue'
@@ -83,7 +83,7 @@ const isDraggingSection = ref(false)
 const dragStartY = ref(0)
 
 // Tab state for Key Properties section
-const activePropertiesTab = ref<'properties' | 'metadata' | 'sides' | 'summary'>('properties')
+const activePropertiesTab = ref<'properties' | 'metadata' | 'modules' | 'summary'>('properties')
 
 const collapsedSections = ref<Record<string, boolean>>({
   properties: false,
@@ -395,10 +395,10 @@ const isLayoutEditorSettingsOpen = ref(false)
                 </button>
                 <button
                   class="tab-btn"
-                  :class="{ active: activePropertiesTab === 'sides' }"
-                  @click.stop="activePropertiesTab = 'sides'"
+                  :class="{ active: activePropertiesTab === 'modules' }"
+                  @click.stop="activePropertiesTab = 'modules'"
                 >
-                  Sides
+                  Modules
                 </button>
                 <button
                   class="tab-btn"
@@ -456,7 +456,7 @@ const isLayoutEditorSettingsOpen = ref(false)
           >
             <KeyPropertiesPanel v-if="activePropertiesTab === 'properties'" />
             <KeyboardMetadataPanel v-else-if="activePropertiesTab === 'metadata'" />
-            <SidesPanel v-else-if="activePropertiesTab === 'sides'" />
+            <ModulesPanel v-else-if="activePropertiesTab === 'modules'" />
             <SummaryPanel v-else-if="activePropertiesTab === 'summary'" />
           </div>
 

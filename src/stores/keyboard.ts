@@ -357,16 +357,20 @@ export const useKeyboardStore = defineStore('keyboard', () => {
     })
   }
 
-  const updateZoneSetting = (zone: number, patch: Partial<ZoneSettings>) => {
+  const updateZoneSetting = (zone: number, patch: Partial<ZoneSettings>, persist = true) => {
     ensureZoneMeta(metadata.value, zone)
     const rec = metadata.value as KeyboardMetadata & { _zones: Record<string, ZoneSettings> }
     const z = String(zone)
-    rec._zones = {
-      ...rec._zones,
-      [z]: { ...rec._zones[z]!, ...patch },
+    const next: ZoneSettings = { ...rec._zones[z]!, ...patch }
+    if ('name' in patch) {
+      const raw = String(patch.name || '')
+      const named = persist ? raw.trim() : raw
+      if (named) next.name = named
+      else delete next.name
     }
+    rec._zones = { ...rec._zones, [z]: next }
     metadata.value = { ...rec }
-    saveState()
+    if (persist) saveState()
   }
 
   const deleteKeys = () => {

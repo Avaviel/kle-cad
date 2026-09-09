@@ -6,6 +6,7 @@ import {
   convexHull,
   cornerLabel,
   DEFAULT_ZONE_SETTINGS,
+  getZoneSettings,
   hydrateCorners,
   injectCadCornerProps,
   isCorner,
@@ -67,6 +68,15 @@ describe('cad-corners', () => {
     const row = injected[1] as unknown[]
     expect(row[0]).toMatchObject({ d: true, _z: 1, _zi: 0 })
     expect(row[1]).toBe('Z1.0')
+  })
+
+  it('round-trips an optional module name on zone settings', () => {
+    const named = getZoneSettings(
+      { _zones: { '1': { fillet: 6, offset: 16, shape: 'convex', name: 'Nav block' } } } as never,
+      1,
+    )
+    expect(named.name).toBe('Nav block')
+    expect(getZoneSettings({} as never, 1).name).toBeUndefined()
   })
 
   it('uses a stable palette', () => {

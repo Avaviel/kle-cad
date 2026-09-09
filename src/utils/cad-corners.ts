@@ -10,6 +10,8 @@ export interface ZoneSettings {
   fillet: number
   offset: number
   shape: ZoneShape
+  /** Optional label for this plate island. Omitted from JSON when blank. */
+  name?: string
 }
 
 export const DEFAULT_ZONE_SETTINGS: ZoneSettings = { fillet: 6, offset: 16, shape: 'convex' }
@@ -187,10 +189,12 @@ export function getZoneSettings(
   const raw = rec?._zones?.[String(zone)]
   const fillet = raw?.fillet != null ? Number(raw.fillet) : DEFAULT_ZONE_SETTINGS.fillet
   const offset = raw?.offset != null ? Number(raw.offset) : DEFAULT_ZONE_SETTINGS.offset
+  const name = typeof raw?.name === 'string' ? raw.name : ''
   return {
     fillet: Number.isFinite(fillet) && fillet >= 0 ? fillet : DEFAULT_ZONE_SETTINGS.fillet,
     offset: Number.isFinite(offset) ? offset : DEFAULT_ZONE_SETTINGS.offset,
     shape: raw?.shape === 'path' ? 'path' : 'convex',
+    ...(name ? { name } : {}),
   }
 }
 
