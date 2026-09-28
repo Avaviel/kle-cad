@@ -22,6 +22,16 @@
       <!-- Full-layout JSON, same companion path as YAKB Copy layout / Paste layout.
            Own group so it is not a fourth Import/Export/Share action. -->
       <div class="btn-group layout-clipboard-group" role="group" aria-label="Layout JSON clipboard">
+        <a
+          class="btn btn-outline-primary"
+          data-testid="link-yakb-cad"
+          href="https://avaviel.com/YAKB-cad"
+          target="_blank"
+          rel="noopener noreferrer"
+          title="Open YAKB CAD to paste this layout"
+        >
+          YAKB <BiBoxArrowUpRight class="bi" aria-hidden="true" />
+        </a>
         <button
           class="btn btn-outline-primary"
           data-testid="button-copy-layout"
