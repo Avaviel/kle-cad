@@ -3,6 +3,7 @@ import { Key } from '@adamws/kle-serial'
 import {
   applyCornerFields,
   buildZoneOutline,
+  concaveHull,
   convexHull,
   cornerLabel,
   DEFAULT_ZONE_SETTINGS,
@@ -10,6 +11,7 @@ import {
   hydrateCorners,
   injectCadCornerProps,
   isCorner,
+  isSimplePolygon,
   nextCornerIndex,
   nextNewZone,
   offsetPolygon,
@@ -127,6 +129,82 @@ describe('cad-corners', () => {
     )
     expect(cmds.some((c) => c.type === 'quad')).toBe(true)
     expect(cmds[0]?.type).toBe('move')
+  })
+
+  it('concaveHull keeps walked-in corners instead of ballooning over them', () => {
+    // L-shaped module: (100,100) is the reflex corner of the notch.
+    const hull = concaveHull(
+      [
+        { x: 0, y: 0 },
+        { x: 200, y: 0 },
+        { x: 200, y: 100 },
+        { x: 100, y: 100 },
+        { x: 100, y: 200 },
+        { x: 0, y: 200 },
+      ],
+      57.15,
+    )
+    expect(hull).toHaveLength(6)
+    const order = hull.map((p) => `${p.x},${p.y}`)
+    expect(order).toEqual(['0,0', '200,0', '200,100', '100,100', '100,200', '0,200'])
+  })
+
+  it('buildZoneOutline convex mode cuts concave corners in like YAKB', () => {
+    const outline = buildZoneOutline(
+      [
+        { x: 0, y: 0 },
+        { x: 200, y: 0 },
+        { x: 200, y: 100 },
+        { x: 100, y: 100 },
+        { x: 100, y: 200 },
+        { x: 0, y: 200 },
+      ],
+      { ...DEFAULT_ZONE_SETTINGS, shape: 'convex', offset: 10, fillet: 0 },
+      1,
+    )
+    // Reflex corner (100,100) offsets into the notch instead of being bridged over.
+    expect(outline).toHaveLength(6)
+    expect(outline.some((p) => Math.abs(p.x - 110) < 1e-6 && Math.abs(p.y - 110) < 1e-6)).toBe(
+      true,
+    )
+  })
+
+  it('buildZoneOutline convex mode presses every walked corner in', () => {
+    // Tight 2U-mouth notch: hull heuristics alone spike here, but walked
+    // order is a clean ring so every corner lands on the outline.
+    const walked = [
+      [0, 0],
+      [1, 0],
+      [1, 1],
+      [3, 1],
+      [3, 0],
+      [4, 0],
+      [4, 4],
+      [0, 4],
+    ].map(([x, y]) => ({ x: (x || 0) * 19.05, y: (y || 0) * 19.05 }))
+    const outline = buildZoneOutline(
+      walked,
+      { ...DEFAULT_ZONE_SETTINGS, shape: 'convex', offset: 0, fillet: 0 },
+      1,
+    )
+    expect(outline.map((p) => `${p.x},${p.y}`)).toEqual(
+      walked.map((p) => `${p.x},${p.y}`),
+    )
+  })
+
+  it('buildZoneOutline convex mode wraps self-crossing walked order', () => {
+    const outline = buildZoneOutline(
+      [
+        { x: 0, y: 0 },
+        { x: 10, y: 10 },
+        { x: 10, y: 0 },
+        { x: 0, y: 10 },
+      ],
+      { ...DEFAULT_ZONE_SETTINGS, shape: 'convex', offset: 0, fillet: 0 },
+      1,
+    )
+    expect(outline).toHaveLength(4)
+    expect(isSimplePolygon(outline)).toBe(true)
   })
 
   it('buildZoneOutline applies default offset in px', () => {

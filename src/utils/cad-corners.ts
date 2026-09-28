@@ -226,6 +226,112 @@ export function convexHull(points: Point[]): Point[] {
   return lower.concat(upper)
 }
 
+const MM_PER_UNIT = 19.05
+/** YAKB only splits hull edges at least this long (KLE units) when conforming. */
+const CONCAVE_MAX_EDGE_UNITS = 3
+
+function uniquePoints(points: Point[], eps: number): Point[] {
+  const out: Point[] = []
+  const lim = eps * eps
+  for (const p of points || []) {
+    if (
+      !out.some((q) => {
+        const dx = p.x - q.x
+        const dy = p.y - q.y
+        return dx * dx + dy * dy < lim
+      })
+    ) {
+      out.push(p)
+    }
+  }
+  return out
+}
+
+function pointInPoly(p: Point, poly: Point[]): boolean {
+  let inside = false
+  for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+    const xi = poly[i]!.x
+    const yi = poly[i]!.y
+    const xj = poly[j]!.x
+    const yj = poly[j]!.y
+    if (yi > p.y !== (yj > p.y) && p.x < ((xj - xi) * (p.y - yi)) / (yj - yi || 1e-12) + xi) {
+      inside = !inside
+    }
+  }
+  return inside
+}
+
+/**
+ * YAKB-compatible concave hull: start from the convex hull, then splice
+ * walked-in corners back onto the long edges they sit behind. Same insertion
+ * rules as YAKB's PlateBuilder so the overlay previews the DXF outline.
+ * maxEdge is in the same units as the points.
+ */
+export function concaveHull(points: Point[], maxEdge: number): Point[] {
+  const pxPerUnit = maxEdge / CONCAVE_MAX_EDGE_UNITS
+  const deduped = uniquePoints(points, 0.02 * pxPerUnit)
+  if (deduped.length <= 2 || !(maxEdge > 0)) return convexHull(deduped)
+  // YAKB-style hull: keep collinear edge points (`< 0`), unlike convexHull above.
+  const sorted = [...deduped].sort((a, b) => a.x - b.x || a.y - b.y)
+  const build = (list: Point[]): Point[] => {
+    const hull: Point[] = []
+    for (const p of list) {
+      while (
+        hull.length >= 2 &&
+        cross(hull[hull.length - 2]!, hull[hull.length - 1]!, p) < 0
+      ) {
+        hull.pop()
+      }
+      hull.push(p)
+    }
+    return hull
+  }
+  const lower = build(sorted)
+  const upper = build([...sorted].reverse())
+  lower.pop()
+  upper.pop()
+  const poly = lower.concat(upper)
+  if (poly.length < 3) return poly
+  const pid = (p: Point) =>
+    `${Math.round((p.x * 100) / pxPerUnit)}:${Math.round((p.y * 100) / pxPerUnit)}`
+  const used = new Set<string>()
+  for (const p of poly) used.add(pid(p))
+  const interior = deduped.filter((p) => !used.has(pid(p)))
+  let guard = 0
+  while (interior.length > 0 && guard++ < deduped.length * 5) {
+    let bestI = -1
+    let bestJ = -1
+    let bestScore = Infinity
+    for (let i = 0; i < poly.length; i++) {
+      const a = poly[i]!
+      const b = poly[(i + 1) % poly.length]!
+      const abx = b.x - a.x
+      const aby = b.y - a.y
+      const elen = hypot(abx, aby)
+      if (elen < maxEdge) continue
+      for (let j = 0; j < interior.length; j++) {
+        const p = interior[j]!
+        if (!pointInPoly(p, poly)) continue
+        const t = ((p.x - a.x) * abx + (p.y - a.y) * aby) / (elen * elen || 1)
+        if (t <= 0.08 || t >= 0.92) continue
+        const qx = a.x + t * abx
+        const qy = a.y + t * aby
+        const d = hypot(p.x - qx, p.y - qy)
+        if (d > elen * 0.7) continue
+        if (d < bestScore) {
+          bestScore = d
+          bestI = i
+          bestJ = j
+        }
+      }
+    }
+    if (bestI < 0) break
+    poly.splice(bestI + 1, 0, interior[bestJ]!)
+    interior.splice(bestJ, 1)
+  }
+  return poly
+}
+
 function signedArea(points: Point[]): number {
   let area = 0
   const n = points.length
@@ -325,11 +431,60 @@ export function roundedPolygonCommands(points: Point[], radius: number): PathCmd
   return cmds
 }
 
+function orient(a: Point, b: Point, c: Point): number {
+  return (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x)
+}
+
+function onSegment(a: Point, b: Point, c: Point): boolean {
+  const eps = 1e-9
+  return (
+    Math.min(a.x, c.x) - eps <= b.x &&
+    b.x <= Math.max(a.x, c.x) + eps &&
+    Math.min(a.y, c.y) - eps <= b.y &&
+    b.y <= Math.max(a.y, c.y) + eps
+  )
+}
+
+function segmentsCross(p1: Point, p2: Point, p3: Point, p4: Point): boolean {
+  const d1 = orient(p3, p4, p1)
+  const d2 = orient(p3, p4, p2)
+  const d3 = orient(p1, p2, p3)
+  const d4 = orient(p1, p2, p4)
+  if (d1 * d2 < 0 && d3 * d4 < 0) return true
+  if (d1 === 0 && onSegment(p3, p1, p4)) return true
+  if (d2 === 0 && onSegment(p3, p2, p4)) return true
+  if (d3 === 0 && onSegment(p1, p3, p2)) return true
+  if (d4 === 0 && onSegment(p1, p4, p2)) return true
+  return false
+}
+
+/** True when the walked corner order forms a non-self-intersecting ring. */
+export function isSimplePolygon(points: Point[]): boolean {
+  const n = points.length
+  if (n < 3) return true
+  for (let i = 0; i < n; i++) {
+    const a1 = points[i]!
+    const a2 = points[(i + 1) % n]!
+    for (let j = i + 1; j < n; j++) {
+      // Adjacent edges (including the first/last wrap) share a vertex.
+      if (j === (i + 1) % n || i === (j + 1) % n) continue
+      const b1 = points[j]!
+      const b2 = points[(j + 1) % n]!
+      if (segmentsCross(a1, a2, b1, b2)) return false
+    }
+  }
+  return true
+}
+
 export function buildZoneOutline(points: Point[], settings: ZoneSettings, mmToPx: number): Point[] {
   if (points.length < 2) return points.slice()
   let pts = points.slice()
   if (settings.shape !== 'path' && pts.length >= 3) {
-    pts = convexHull(pts)
+    // Walked corner order wins when it forms a clean ring, so inside
+    // corners always press in; otherwise wrap the extremes like YAKB.
+    if (!isSimplePolygon(pts)) {
+      pts = concaveHull(pts, CONCAVE_MAX_EDGE_UNITS * MM_PER_UNIT * mmToPx)
+    }
   }
   const offsetPx = settings.offset * mmToPx
   if (offsetPx !== 0 && pts.length >= 3) {
