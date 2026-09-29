@@ -296,4 +296,37 @@ describe('cad-corners', () => {
       expect(Number.isFinite(pt.x) && Number.isFinite(pt.y)).toBe(true)
     }
   })
+
+  it('offsetPolygon bevels needle corners instead of spiking', () => {
+    // 19-degree apex: a raw miter would spike 6x the offset off the tip.
+    const grown = offsetPolygon(
+      [
+        { x: 0, y: 0 },
+        { x: 1, y: 0 },
+        { x: 0.5, y: 3 },
+      ],
+      1,
+    )
+    // Bevel replaces the apex miter with two flat points, base miters stay.
+    expect(grown).toHaveLength(4)
+    expect(Math.max(...grown.map((pt) => pt.y))).toBeLessThan(5)
+    for (const pt of grown) {
+      expect(Number.isFinite(pt.x) && Number.isFinite(pt.y)).toBe(true)
+    }
+  })
+
+  it('offsetPolygon keeps ordinary 90-degree miters sharp', () => {
+    const grown = offsetPolygon(
+      [
+        { x: 0, y: 0 },
+        { x: 10, y: 0 },
+        { x: 10, y: 10 },
+        { x: 0, y: 10 },
+      ],
+      1,
+    )
+    expect(grown).toHaveLength(4)
+    const coords = new Set(grown.map((pt) => `${pt.x},${pt.y}`))
+    expect(coords).toEqual(new Set(['-1,-1', '11,-1', '11,11', '-1,11']))
+  })
 })

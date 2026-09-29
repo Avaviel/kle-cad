@@ -382,8 +382,16 @@ export function offsetPolygon(points: Point[], distance: number): Point[] {
     }
     bx /= bLen
     by /= bLen
-    const cos = Math.max(bx * n1x + by * n1y, 0.2)
-    const scale = distance / cos
+    // Miter limit: an acute corner would spike far off the outline, so
+    // cut it flat (bevel join) once the miter exceeds 2x the offset.
+    // Mirrored in YACB's offsetPolygon so DXF matches the overlay.
+    const cosRaw = bx * n1x + by * n1y
+    if (cosRaw < 0.5) {
+      out.push({ x: cur.x + n1x * distance, y: cur.y + n1y * distance })
+      out.push({ x: cur.x + n2x * distance, y: cur.y + n2y * distance })
+      continue
+    }
+    const scale = distance / cosRaw
     out.push({ x: cur.x + bx * scale, y: cur.y + by * scale })
   }
   return out
