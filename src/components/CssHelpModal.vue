@@ -16,14 +16,14 @@
           >
           control over keyboard CSS style via <code>css</code> metadata field defined in a layout.
         </p>
-        <p>When you import a KLE layout, kle-ng displays that metadata value in this field.</p>
+        <p>When you import a KLE layout, KLE-CAD displays that metadata value in this field.</p>
       </div>
     </div>
 
     <div class="help-section">
       <h6 class="help-section-title">Supported CSS Features</h6>
       <div class="help-content">
-        <p>The kle-ng supports only a minimal subset of CSS:</p>
+        <p>KLE-CAD supports only a minimal subset of CSS:</p>
         <ol>
           <li>
             <code>@import url(...);</code> - Loads external font stylesheet (e.g., Google Fonts)

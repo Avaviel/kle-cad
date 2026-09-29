@@ -63,7 +63,7 @@ describe('KeyboardToolbar YAKB link', () => {
     const link = mountToolbar().find('[data-testid="link-yakb-cad"]')
     expect(link.exists()).toBe(true)
     expect(link.element.tagName).toBe('A')
-    expect(link.attributes('href')).toBe('https://avaviel.com/YAKB-cad')
+    expect(link.attributes('href')).toBe('https://avaviel.com/yacb')
     expect(link.attributes('target')).toBe('_blank')
     expect(link.attributes('rel')).toContain('noopener')
     expect(link.text()).toContain('Send to YACB')
@@ -80,7 +80,7 @@ describe('KeyboardToolbar YAKB link', () => {
     expect(writeText).toHaveBeenCalledTimes(1)
     expect(writeText.mock.calls[0]![0]).toContain('yacb-probe')
     expect(openSpy).toHaveBeenCalledWith(
-      'https://avaviel.com/YAKB-cad',
+      'https://avaviel.com/yacb',
       '_blank',
       'noopener,noreferrer',
     )

@@ -823,7 +823,7 @@ non-ASCII layout names survive, and timestamps are written in MS-DOS form; passi
 Name handling in the modal: `toEntryStem()` replaces the characters Windows reserves
 (`< > : " / \ | ? *` and C0 controls) and never returns an empty stem; `toEntryName()` suffixes
 `(2)`, `(3)`… until names are unique, compared case-insensitively because the target filesystems
-generally are. The archive is named `kle-ng-layouts-YYYY-MM-DD.zip`.
+generally are. The archive is named `kle-cad-layouts-YYYY-MM-DD.zip`.
 
 ## Testing
 

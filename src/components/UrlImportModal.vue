@@ -18,7 +18,7 @@
               @keyup.enter="importFromUrl"
             />
             <div class="form-text">
-              Paste a link to a JSON file, GitHub Gist, Ergogen layout, or a kle-ng share or short
+              Paste a link to a JSON file, GitHub Gist, Ergogen layout, or a KLE-CAD share or short
               link. All formats are automatically detected.
             </div>
           </div>

@@ -23,7 +23,7 @@ Matrix coordinates determine how switches are wired in the keyboard matrix.
 
 ## Matrix Coordinates {#matrix-coordinates}
 
-Matrix coordinates in kle-ng use VIA label format. Each key's top-left label contains the row and column assignment as `row,col` (e.g., `0,0`, `0,1`, `1,0`).
+Matrix coordinates in KLE-CAD use VIA label format. Each key's top-left label contains the row and column assignment as `row,col` (e.g., `0,0`, `0,1`, `1,0`).
 
 The easiest way to assign matrix coordinates is to use [Add Switch Matrix Coordinates](./layout-editor#add-switch-matrix-coordinates), which can annotate your layout automatically or let you draw rows and columns manually.
 

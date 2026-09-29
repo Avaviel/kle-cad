@@ -25,7 +25,7 @@
                openForCurrentLayout), not that the privacy tradeoffs need repeating. -->
           <template v-if="!shortLinksStore.skipWarning">
             <p>
-              A short link stores this layout on the kle-ng server and gives you a URL that points
+              A short link stores this layout on the KLE-CAD server and gives you a URL that points
               at it. Before you create one:
             </p>
             <ul class="mb-3">
@@ -39,8 +39,8 @@
                 your account. Assume it is permanent.
               </li>
               <li class="mb-2">
-                <strong>kle-ng may keep and use it.</strong> The stored layout may be retained
-                indefinitely and used by kle-ng in the future, including after you stop using the
+                <strong>KLE-CAD may keep and use it.</strong> The stored layout may be retained
+                indefinitely and used by KLE-CAD in the future, including after you stop using the
                 app.
               </li>
             </ul>

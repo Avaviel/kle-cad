@@ -4,11 +4,11 @@
 
 The original [Keyboard Layout Editor](https://www.keyboard-layout-editor.com/) provided [fine-grained](https://github.com/ijprest/keyboard-layout-editor/wiki/Custom-Styles) control over keyboard CSS style via a `css` metadata field defined in a layout. This allows using any web font (like Google Fonts) for key label rendering.
 
-When you import a KLE layout that contains CSS metadata, kle-ng displays that value in the **CSS** field of the **Keyboard Metadata** panel.
+When you import a KLE layout that contains CSS metadata, KLE-CAD displays that value in the **CSS** field of the **Keyboard Metadata** panel.
 
 ## Supported CSS Features {#supported-syntax}
 
-kle-ng supports only a minimal subset of CSS for loading fonts:
+KLE-CAD supports only a minimal subset of CSS for loading fonts:
 
 ```css
 @import url(https://fonts.googleapis.com/css2?family=Noto+Sans+JP);
@@ -68,7 +68,7 @@ The font loads from Google's servers when the layout is opened. If the browser c
 
 ### Mixed Fonts
 
-**Different fonts for different keys are not possible** — kle-ng applies one font globally. If you need mixed scripts (e.g., Latin and Japanese on the same layout), choose a font that supports both character ranges, such as Noto Sans.
+**Different fonts for different keys are not possible** — KLE-CAD applies one font globally. If you need mixed scripts (e.g., Latin and Japanese on the same layout), choose a font that supports both character ranges, such as Noto Sans.
 
 ## CSS Metadata in KLE Export
 

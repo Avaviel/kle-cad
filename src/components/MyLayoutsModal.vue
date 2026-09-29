@@ -846,7 +846,7 @@ const downloadAll = () => {
   try {
     saveBlob(
       new Blob([createZip(entries, now)], { type: 'application/zip' }),
-      `kle-ng-layouts-${now.toISOString().slice(0, 10)}.zip`,
+      `kle-cad-layouts-${now.toISOString().slice(0, 10)}.zip`,
     )
   } catch (error) {
     console.error('Error building the layout archive:', error)

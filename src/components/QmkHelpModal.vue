@@ -10,7 +10,7 @@
           USB configuration, and other QMK-specific settings.
         </p>
         <p>
-          When you import a QMK <code>info.json</code> file, kle-ng converts it to KLE format and
+          When you import a QMK <code>info.json</code> file, KLE-CAD converts it to KLE format and
           preserves the QMK metadata in a <code>_kleng_qmk_data</code> field. This allows you to
           edit the layout and export it back to QMK format later.
         </p>
@@ -95,7 +95,7 @@
             <BiExclamationTriangleFill class="text-warning" />
             <div>
               <small>
-                kle-ng does not validate the <b>content</b> of the JSON. It is your responsibility
+                KLE-CAD does not validate the <b>content</b> of the JSON. It is your responsibility
                 to maintain valid QMK format. See the
                 <a href="https://docs.qmk.fm/" target="_blank">QMK Documentation</a>
                 for field specifications.

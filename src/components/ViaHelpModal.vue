@@ -21,7 +21,7 @@
           <a href="https://www.caniusevia.com/docs/layouts" target="_blank"> VIA specification</a>.
         </p>
         <p>
-          When you import a VIA file, kle-ng converts it to KLE format and preserves the
+          When you import a VIA file, KLE-CAD converts it to KLE format and preserves the
           VIA-specific metadata in this field. This allows you to edit the layout and export it back
           to VIA format later.
         </p>
@@ -78,7 +78,7 @@
             <BiExclamationTriangleFill class="text-warning" />
             <div>
               <small>
-                kle-ng does not validate the <b>content</b> of JSON. It is your responsibility to
+                KLE-CAD does not validate the <b>content</b> of JSON. It is your responsibility to
                 maintain VIA format convention as defined in the
                 <a href="https://www.caniusevia.com/docs/specification" target="_blank"
                   >VIA specification</a

@@ -1,6 +1,6 @@
 # Import & Export
 
-kle-ng supports importing and exporting keyboard layouts in multiple formats.
+KLE-CAD supports importing and exporting keyboard layouts in multiple formats.
 
 ## Supported Formats
 
@@ -31,7 +31,7 @@ Zoom in on the canvas before exporting to PNG to increase the output image resol
 
 [VIA](https://www.caniusevia.com/) and [Vial](https://get.vial.today/) are keyboard configuration tools that use a special JSON format. VIA format wraps KLE layout data with additional metadata (keyboard name, vendor/product IDs, matrix configuration).
 
-**On import**, kle-ng converts VIA format to KLE format and preserves VIA-specific metadata in a `_kleng_via_data` field, maintaining full compatibility. VIA layouts can be imported in two ways:
+**On import**, KLE-CAD converts VIA format to KLE format and preserves VIA-specific metadata in a `_kleng_via_data` field, maintaining full compatibility. VIA layouts can be imported in two ways:
 
 - **From File**: Browse for a VIA layout JSON file on your computer
 - **From VIA**: Search and import directly from a curated database of VIA-ready keyboards via **Import → From VIA** modal, without needing to download the JSON file manually
@@ -77,7 +77,7 @@ See [VIA & Vial Format](./via-and-metadata) for detailed information.
 
 ### QMK Format {#qmk-format}
 
-[QMK](https://qmk.fm/) `info.json` files can be imported directly. kle-ng converts key positions, dimensions, and matrix coordinates into KLE format.
+[QMK](https://qmk.fm/) `info.json` files can be imported directly. KLE-CAD converts key positions, dimensions, and matrix coordinates into KLE format.
 
 ::: warning
 QMK `info.json` files often do not convey exact physical key positions, particularly rotations. QMK imports may not be suitable for PCB or plate generation without careful verification of key positions. Always check rotation and positioning thoroughly before using the output for manufacturing.
@@ -146,11 +146,11 @@ VIA and QMK use fundamentally different models for keyboards that support multip
 
 Reading those three layouts there is no structural information that says "the backspace difference is one independent option and the enter difference is another." The VIA option/choice tree cannot be recovered from a QMK file — and conversely, a QMK file may define only a subset of all possible combinations, so the VIA tree cannot be automatically flattened to QMK either.
 
-#### The `labels[9]` membership tag (kle-ng internal)
+#### The `labels[9]` membership tag (KLE-CAD internal)
 
-Because automatic conversion between QMK layouts and VIA option/choice is impossible, kle-ng uses a dedicated mechanism for QMK round-trips: a **layout membership tag** stored in `labels[9]` (the bottom-left legend position).
+Because automatic conversion between QMK layouts and VIA option/choice is impossible, KLE-CAD uses a dedicated mechanism for QMK round-trips: a **layout membership tag** stored in `labels[9]` (the bottom-left legend position).
 
-When kle-ng imports a QMK file with multiple layouts it tags each key with the set of QMK layout indices that contain it, using a semicolon-separated list:
+When KLE-CAD imports a QMK file with multiple layouts it tags each key with the set of QMK layout indices that contain it, using a semicolon-separated list:
 
 | `labels[9]` value | Meaning                          |
 | ----------------- | -------------------------------- |
@@ -158,11 +158,11 @@ When kle-ng imports a QMK file with multiple layouts it tags each key with the s
 | `"0"`             | Belongs to QMK layout 0 only     |
 | `"1;2"`           | Belongs to QMK layouts 1 and 2   |
 
-This tag has no equivalent in either QMK or VIA — it is a kle-ng invention used solely to make QMK import → edit → export round-trips accurate. It is deliberately different from the VIA `option,choice` scheme (which uses a comma-separated `N,M` pair and is read from `labels[8]` by default), so QMK-imported keyboards are never treated as VIA keyboards.
+This tag has no equivalent in either QMK or VIA — it is a KLE-CAD invention used solely to make QMK import → edit → export round-trips accurate. It is deliberately different from the VIA `option,choice` scheme (which uses a comma-separated `N,M` pair and is read from `labels[8]` by default), so QMK-imported keyboards are never treated as VIA keyboards.
 
 #### Multi-Layout Import
 
-When a QMK file declares multiple layouts, kle-ng imports **all physically distinct key configurations from all layouts into a single flat view**. This preserves the complete superset of physical switch positions:
+When a QMK file declares multiple layouts, KLE-CAD imports **all physically distinct key configurations from all layouts into a single flat view**. This preserves the complete superset of physical switch positions:
 
 - **Shared keys** — Keys that are physically identical across every layout (same matrix position, x, y, width, height, rotation) are imported once with no tag. These keys will appear in every layout when exported.
 - **Layout-specific keys** — Keys that appear in only some layouts, or keys at the same matrix position with different dimensions in different layouts, receive a small label indicator showing which layout indices they belong to. This tag appears in the `labels[9]` position (the bottom-left area of the key label).
@@ -170,7 +170,7 @@ When a QMK file declares multiple layouts, kle-ng imports **all physically disti
   - Users see this as a small number or fraction on the key cap (e.g., a key tagged `"1;2"` shows as appearing in layouts 1 and 2 only).
 
 ::: tip
-When a QMK file has multiple layouts, kle-ng imports all physical switch positions into a single flat view — equivalent to a `LAYOUT_all` superset. A QMK layout preview toolbar appears below the canvas, letting you preview individual layouts. Layout-specific keys are tagged with their layout indices so the export can reconstruct the original named layouts accurately.
+When a QMK file has multiple layouts, KLE-CAD imports all physical switch positions into a single flat view — equivalent to a `LAYOUT_all` superset. A QMK layout preview toolbar appears below the canvas, letting you preview individual layouts. Layout-specific keys are tagged with their layout indices so the export can reconstruct the original named layouts accurately.
 :::
 
 #### QMK Layout Preview Toolbar
@@ -196,7 +196,7 @@ The **Import → From QMK** and **Import → From VIA** modals show a preview of
 the search results, so you can tell boards apart without loading each one into the editor and
 losing your current work.
 
-Hover a result (or move to it with the arrow keys) and kle-ng downloads that keyboard's definition
+Hover a result (or move to it with the arrow keys) and KLE-CAD downloads that keyboard's definition
 in the background and draws it using the same renderer as the main canvas. A loading bar appears
 while the download is in progress. You can wait for it, or move straight on to another result — the
 abandoned download is cancelled. Results you scroll past are fetched speculatively, so previews for
@@ -223,12 +223,12 @@ own only fetches the keyboard index.
 
 ### Ergogen Format {#ergogen-format}
 
-[Ergogen](https://ergogen.xyz/) is a keyboard layout generator that uses YAML configuration. kle-ng can import:
+[Ergogen](https://ergogen.xyz/) is a keyboard layout generator that uses YAML configuration. KLE-CAD can import:
 
 - Ergogen YAML files directly
 - Ergogen share URLs (e.g., `https://ergogen.xyz/#N4Igxg9gdg...`)
 
-kle-ng decodes the URL, processes it with the Ergogen library, and converts the result to KLE format for editing.
+KLE-CAD decodes the URL, processes it with the Ergogen library, and converts the result to KLE format for editing.
 
 <table class="example-table">
 <thead><tr>
@@ -264,16 +264,16 @@ points:
 </table>
 
 ::: info
-kle-ng does **not** support export to Ergogen format.
+KLE-CAD does **not** support export to Ergogen format.
 :::
 
 ::: warning
-kle-ng aims to preserve exact key positions when importing Ergogen layouts, but always double-check alignment when mixing outputs from different tools (e.g., Ergogen for PCB + ai03 Plate Generator for plate).
+KLE-CAD aims to preserve exact key positions when importing Ergogen layouts, but always double-check alignment when mixing outputs from different tools (e.g., Ergogen for PCB + ai03 Plate Generator for plate).
 :::
 
 ## Importing {#importing}
 
-kle-ng supports multiple import methods:
+KLE-CAD supports multiple import methods:
 
 ### Import Button
 
@@ -286,7 +286,7 @@ Click the **Import** button in the toolbar and select:
 - Direct JSON URL (any publicly accessible JSON file)
 - GitHub Gist URL
 - Ergogen share link (`https://ergogen.xyz/#...`)
-- Existing kle-ng share link
+- Existing KLE-CAD share link
 
 **From QMK** — Search and import any keyboard directly from the [QMK keyboard database](https://keyboards.qmk.fm/). A searchable list of all available keyboards is loaded from `keyboards.qmk.fm`. Type to filter with fuzzy search, select a keyboard, and click **Import** (or double-click an entry). The keyboard's `info.json` is fetched and converted to KLE format automatically — no file download required. This is equivalent to downloading a keyboard's `info.json` and using **From File**, but without the manual steps.
 
@@ -304,8 +304,8 @@ Supported file formats: **JSON** (KLE, VIA/Vial, QMK), **PNG** (with embedded la
 
 Open layouts shared via URL directly in the browser:
 
-- **kle-ng share link**: `https://editor.keyboard-tools.xyz/#share=NrDeC...`
-- **kle-ng short link**: `https://editor.keyboard-tools.xyz/?s=7kQ2mBx9Lp`
+- **KLE-CAD share link**: `https://editor.keyboard-tools.xyz/#share=NrDeC...`
+- **KLE-CAD short link**: `https://editor.keyboard-tools.xyz/?s=7kQ2mBx9Lp`
 - **Direct Gist ID**: `https://editor.keyboard-tools.xyz/#gist=<gist-id>`
 - **Universal URL format**: `https://editor.keyboard-tools.xyz/#url=<url>`
   - Supports GitHub Gist URLs and Ergogen URLs as the `url=` parameter
@@ -313,7 +313,7 @@ Open layouts shared via URL directly in the browser:
 #### Short links
 
 A share link carries the whole layout in the URL, which makes it long — often several thousand
-characters. A **short link** stores the layout on kle-ng's server instead and puts a short id in the
+characters. A **short link** stores the layout on KLE-CAD's server instead and puts a short id in the
 URL.
 
 - **Anyone can open a short link**; creating one requires signing in.
@@ -323,7 +323,7 @@ URL.
 
 To create one, sign in, then use the caret next to **Share Link** and choose **Create short link**.
 A dialog explains the consequences before anything is stored: a short link is public, it cannot be
-deleted or withdrawn once created, and kle-ng may retain the stored layout. Creating one is only
+deleted or withdrawn once created, and KLE-CAD may retain the stored layout. Creating one is only
 confirmed from that dialog — the menu item itself stores nothing.
 
 Once created, the dialog shows the link in a field with a **Copy** button and stays open until you
@@ -337,7 +337,7 @@ and no server.
 
 ### GitHub Gist File Priority
 
-When importing from a GitHub Gist, kle-ng searches for layout files in this priority order:
+When importing from a GitHub Gist, KLE-CAD searches for layout files in this priority order:
 
 1. `layout.json`
 2. `keyboard.json`
@@ -372,7 +372,7 @@ Click the **Export** button in the toolbar to access all export options:
 
 ## Open in External Web Tools {#external-web-tools}
 
-Two Export options hand the current layout off to an external web app instead of producing a file. kle-ng encodes the layout into the target app's URL (compressed KLE data in the URL hash) and opens it in a new tab, so there is no file to download or paste.
+Two Export options hand the current layout off to an external web app instead of producing a file. KLE-CAD encodes the layout into the target app's URL (compressed KLE data in the URL hash) and opens it in a new tab, so there is no file to download or paste.
 
 - **Edit in Ergogen Web GUI** — opens [ergogen.xyz](https://ergogen.xyz/) with the layout loaded as an Ergogen config.
 - **Open in Shield Wizard (ZMK)** — opens the [ZMK Shield Wizard](https://shield-wizard.genteure.com/), which builds a **physical layout** from your keys so you can configure a custom [ZMK](https://zmk.dev/) shield without writing code.
@@ -386,7 +386,7 @@ When you choose **Open in Shield Wizard (ZMK)**:
 - The wizard opens on its **Layout** tab with the keys already placed.
 
 ::: info Matrix row/col is inferred
-kle-ng sends physical geometry (positions, sizes, rotations), not matrix wiring. The Shield Wizard derives each key's **row/col from physical position** by default. If you need deterministic matrix coordinates, give every key a `row,col` legend before exporting (the same top-left `row,col` annotation used for [QMK export](#qmk-export)) — the wizard honors those legends when **all** keys have them, and otherwise falls back to geometry inference.
+KLE-CAD sends physical geometry (positions, sizes, rotations), not matrix wiring. The Shield Wizard derives each key's **row/col from physical position** by default. If you need deterministic matrix coordinates, give every key a `row,col` legend before exporting (the same top-left `row,col` annotation used for [QMK export](#qmk-export)) — the wizard honors those legends when **all** keys have them, and otherwise falls back to geometry inference.
 :::
 
 ## QMK Export {#qmk-export}
@@ -413,7 +413,7 @@ When you export to QMK format:
 
 **QMK-imported keyboards** automatically use the layout membership mechanism:
 
-When you import a QMK file with multiple layouts, keys are tagged with layout membership in the `labels[9]` position (bottom-left legend area). On export, kle-ng uses these tags to reconstruct the original named layouts:
+When you import a QMK file with multiple layouts, keys are tagged with layout membership in the `labels[9]` position (bottom-left legend area). On export, KLE-CAD uses these tags to reconstruct the original named layouts:
 
 - **Shared keys** — Keys with empty `labels[9]` appear in every reconstructed layout
 - **Layout-specific keys** — Keys with `labels[9]` containing semicolon-separated layout indices (e.g., `"0"`, `"1;2"`, `"0;1;2"`) appear only in the layouts listed
@@ -425,7 +425,7 @@ The layout membership tags in `labels[9]` are set automatically during QMK impor
 
 **VIA/Vial keyboards** use a different, independent mechanism:
 
-VIA and Vial layouts encode layout alternatives as `option,choice` labels (e.g., `0,0`, `0,1`) at one of the key label positions. kle-ng detects this scheme automatically and generates one QMK layout per distinct choice. The option number groups related choices; the choice number selects the variant. This is the native VIA format — it is not related to the QMK membership path above; both are fully supported.
+VIA and Vial layouts encode layout alternatives as `option,choice` labels (e.g., `0,0`, `0,1`) at one of the key label positions. KLE-CAD detects this scheme automatically and generates one QMK layout per distinct choice. The option number groups related choices; the choice number selects the variant. This is the native VIA format — it is not related to the QMK membership path above; both are fully supported.
 
 ### Example
 
@@ -452,7 +452,7 @@ When exported, the QMK `info.json` contains two separate layout definitions:
 
 ### Ergogen Compatibility
 
-**Ergogen import produces unexpected positions** — Ergogen's coordinate origin and key rotation conventions differ from KLE. kle-ng aims to preserve positions faithfully, but always cross-check the result against Ergogen's own preview before using the output for manufacturing.
+**Ergogen import produces unexpected positions** — Ergogen's coordinate origin and key rotation conventions differ from KLE. KLE-CAD aims to preserve positions faithfully, but always cross-check the result against Ergogen's own preview before using the output for manufacturing.
 
 ### VIA Export Unavailable
 

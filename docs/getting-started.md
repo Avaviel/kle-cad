@@ -1,6 +1,6 @@
 # Getting Started
 
-The kle-ng runs entirely in your web browser — no installation required.
+The KLE-CAD runs entirely in your web browser — no installation required.
 Visit [editor.keyboard-tools.xyz](https://editor.keyboard-tools.xyz/) and start creating or editing keyboard layouts immediately.
 
 ## Interface Overview
@@ -61,7 +61,7 @@ See [PCB Generator](./pcb-generator) for full details.
 
 ## The Unit System
 
-All key positions and sizes in kle-ng are expressed in **U** (keyboard units). One U is the width of a standard alphanumeric key (for example, `A`, `S`, `D`).
+All key positions and sizes in KLE-CAD are expressed in **U** (keyboard units). One U is the width of a standard alphanumeric key (for example, `A`, `S`, `D`).
 
 ### Common Key Sizes
 
@@ -75,7 +75,7 @@ All key positions and sizes in kle-ng are expressed in **U** (keyboard units). O
 
 ### Physical Spacing
 
-The physical size of 1U is **19.05 mm** by default (Cherry MX standard). You can change the mm/U ratio in the **Keyboard Metadata** panel if your layout uses a different switch pitch (for example, Kailh Choc low-profile at 18mm). This is important when using kle-ng's plate or PCB generators.
+The physical size of 1U is **19.05 mm** by default (Cherry MX standard). You can change the mm/U ratio in the **Keyboard Metadata** panel if your layout uses a different switch pitch (for example, Kailh Choc low-profile at 18mm). This is important when using KLE-CAD's plate or PCB generators.
 
 ## Quick Start
 

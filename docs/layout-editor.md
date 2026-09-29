@@ -1,6 +1,6 @@
 # Layout Editor
 
-The canvas editor is the main working area of kle-ng. It provides a full set of tools for creating and editing keyboard layouts.
+The canvas editor is the main working area of KLE-CAD. It provides a full set of tools for creating and editing keyboard layouts.
 
 <img src="/layout-editor-panel-light.png" class="docs-screenshot light-only" alt="Layout editor canvas with a keyboard layout" />
 <img src="/layout-editor-panel-dark.png" class="docs-screenshot dark-only" alt="Layout editor canvas with a keyboard layout" />

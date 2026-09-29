@@ -19,7 +19,7 @@
         <span class="d-inline d-sm-none">Layouts</span>
       </button>
 
-      <!-- Full-layout JSON, same companion path as YAKB Copy layout / Paste layout.
+      <!-- Full-layout JSON, same companion path as YACB Copy layout / Paste layout.
            Own group so it is not a fourth Import/Export/Share action. -->
       <div class="btn-group layout-clipboard-group" role="group" aria-label="Layout JSON clipboard">
         <a
@@ -391,7 +391,7 @@ const copyLayout = async () => {
   }
 }
 
-const YACB_URL = 'https://avaviel.com/YAKB-cad'
+const YACB_URL = 'https://avaviel.com/yacb'
 
 // Trial name for the companion layout tool (Yet Another CAD Builder):
 // copy the keyboard here, then open YACB ready to paste.

@@ -747,7 +747,7 @@ describe('MyLayoutsModal', () => {
 
       expect(packed().map((e) => e.name)).toEqual(['Planck rev6.json', 'Lily58.json'])
       expect(downloaded).toHaveLength(1)
-      expect(downloaded[0]).toMatch(/^kle-ng-layouts-\d{4}-\d{2}-\d{2}\.zip$/)
+      expect(downloaded[0]).toMatch(/^kle-cad-layouts-\d{4}-\d{2}-\d{2}\.zip$/)
     })
 
     // Each entry has to stand on its own as an import, so it carries exactly what

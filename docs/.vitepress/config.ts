@@ -1,8 +1,8 @@
 import { defineConfig } from 'vitepress'
 
 export default defineConfig({
-  title: 'KLE-NG Documentation',
-  description: 'User documentation for Keyboard Layout Editor NG',
+  title: 'KLE-CAD Documentation',
+  description: 'User documentation for KLE-CAD',
 
   base: '/docs/',
   outDir: '../dist/docs',
@@ -80,11 +80,11 @@ export default defineConfig({
     },
 
     editLink: {
-      pattern: 'https://github.com/adamws/kle-ng/edit/master/docs/:path',
+      pattern: 'https://github.com/Avaviel/kle-ng/edit/master/docs/:path',
       text: 'Edit this page on GitHub',
     },
 
-    socialLinks: [{ icon: 'github', link: 'https://github.com/adamws/kle-ng' }],
+    socialLinks: [{ icon: 'github', link: 'https://github.com/Avaviel/kle-ng' }],
 
     footer: {
       message: 'Released under the MIT License.',

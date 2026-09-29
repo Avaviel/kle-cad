@@ -2,13 +2,13 @@
 layout: home
 
 hero:
-  name: KLE-NG
+  name: KLE-CAD
   text: Keyboard Layout Editor NG
   tagline: A modern reimplementation of the Keyboard Layout Editor — better UX, KLE compatibility, and built-in plate and PCB generators.
   image:
     light: /hero-light.png
     dark: /hero-dark.png
-    alt: KLE-NG editor interface
+    alt: KLE-CAD editor interface
   actions:
     - theme: brand
       text: Open Editor

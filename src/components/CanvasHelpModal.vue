@@ -62,7 +62,7 @@
               <div>
                 <strong>Cross-Instance Copy & Paste</strong>
                 <div>
-                  Copy keys in one browser tab/window and paste them in another KLE-NG instance
+                  Copy keys in one browser tab/window and paste them in another KLE-CAD instance
                 </div>
               </div>
             </div>

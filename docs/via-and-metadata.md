@@ -47,7 +47,7 @@ To import a VIA layout file (e.g., from the [VIA keyboards repository](https://g
 
 ### Format Conversion
 
-On import, kle-ng converts the VIA format to KLE format and preserves the VIA-specific metadata in a `_kleng_via_data` field within the KLE JSON, maintaining full KLE compatibility.
+On import, KLE-CAD converts the VIA format to KLE format and preserves the VIA-specific metadata in a `_kleng_via_data` field within the KLE JSON, maintaining full KLE compatibility.
 
 ## Alternative Layouts Preview {#alternative-layouts-preview}
 
@@ -101,7 +101,7 @@ The **Download VIA JSON** option is only available when VIA metadata is present 
 The VIA metadata is stored as JSON and can be edited directly in the **VIA Metadata** field. The editor validates your input in real-time — invalid JSON is highlighted with an error indicator.
 
 ::: warning
-kle-ng does **not** validate the _content_ of the JSON. It is your responsibility to maintain VIA format conventions as defined in the [VIA specification](https://www.caniusevia.com/docs/specification).
+KLE-CAD does **not** validate the _content_ of the JSON. It is your responsibility to maintain VIA format conventions as defined in the [VIA specification](https://www.caniusevia.com/docs/specification).
 :::
 
 **Tips:**

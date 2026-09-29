@@ -1,7 +1,7 @@
 <div align="center">
 
 <a href="https://editor.keyboard-tools.xyz/#share=NrDeCIGNwLnBiAJgRgAwCZkENwBpwAusCAZmeXuDjAOwC++ApgM7S4QAesqAdOgKz5oceJDHjKREahmzwDcADFklRelUBmVQBY8nbn0FRi8LGfPz8i-qoBsqmqoAce8Fxi8BQk+IkLFAJyqaMEqVsjq7G4GXsYi5hYKiIwANq7unkbMALbEAE4A9gQA+oyQyGFU3ArgALq4YOAAnjFZuXCU1PwKAH4AOgB2AAauwgi+YpbgAISDlQACg5EIg1r4ACSDuvgApIM2+AB6g-b4AGSDjvgAVIMu+AAUg0H4AJSDqJTFgwC0lADUgwAvKMTAkzJ1YDR8AB3WDoBSAPg3AAw7AAIAEZYSAAa2YAAcsYx0q0FHiAOYAVzxdQaEDhMGQPG6+AIWHRqMAftSgkQTaAKACKlAA6pQAKKUABKlAAKpQAJqUACqlAAkpQAPKUAAKri6ClAg2AlDog1qrnpjOZ4AAPoM+n1iR5DN54uDIbRSWTEAMaY0LTwaFbIFg8cxUSkCjjueMJlMAIKUADKlAAIqpKABxSgACUoAClKABpSgAGV1sCtMEGAG5KA7BgByaNINCYHAskzkCj4ajQ8D09CGBSAVsJUYwBgRGHlHZkXQhwe3CCZZHIFAALArZIn1P3wof4QDnhKjmGuAJYkIhRMaiWMKABalAAGpQAMKUABqlAAQpQAHKUABZcsYCtAAeQZ8HwAA+QYeEoAB+QYAHpmwXd0+39QMFCPE9zyIHd9AZbRnWaWAfl4QM5xvXwpkAEaBfQgFoYHIkjrzQ2FYEZAQFEgAoJ0KNIon9bj8AKPECFPPjzU4-dwEADGJm15d1UA4mBbFk1C3R7KEFAU-ASB9IQCDyNICOiBkNBIpiWMouIYxohRACGgShAFGgShAGGgOpaiAA">
-  <img src="docs/public/keychron-q1-layout.png" alt="KLE-NG keyboard layout example">
+  <img src="docs/public/keychron-q1-layout.png" alt="KLE-CAD keyboard layout example">
 </a>
 
 **[editor.keyboard-tools.xyz](https://editor.keyboard-tools.xyz/)**
@@ -21,4 +21,4 @@ Full documentation is available at **[editor.keyboard-tools.xyz/docs](https://ed
 
 ## Support
 
-The best way to support this project is to **star this repository on GitHub** and share layouts using kle-ng share links — it helps others discover the project.
+The best way to support this project is to **star this repository on GitHub** and share layouts using KLE-CAD share links — it helps others discover the project.
