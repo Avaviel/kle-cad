@@ -25,12 +25,13 @@
         <a
           class="btn btn-outline-primary"
           data-testid="link-yakb-cad"
-          href="https://avaviel.com/YAKB-cad"
+          :href="YACB_URL"
           target="_blank"
           rel="noopener noreferrer"
-          title="Open YAKB CAD to paste this layout"
+          title="Copy your keyboard and go to the layout tool, YACB"
+          @click.prevent="sendToYacb"
         >
-          YAKB <BiBoxArrowUpRight class="bi" aria-hidden="true" />
+          Send to YACB <BiBoxArrowUpRight class="bi" aria-hidden="true" />
         </a>
         <button
           class="btn btn-outline-primary"
@@ -386,6 +387,27 @@ const copyLayout = async () => {
     })
   } catch (error) {
     console.error('Error copying layout JSON:', error)
+    toast.showError('Please try again.', 'Copy failed')
+  }
+}
+
+const YACB_URL = 'https://avaviel.com/YAKB-cad'
+
+// Trial name for the companion layout tool (Yet Another CAD Builder):
+// copy the keyboard here, then open YACB ready to paste.
+const sendToYacb = async () => {
+  try {
+    const data = keyboardStore.getSerializedData('kle')
+    const text = stringifyWithRounding(data, 2)
+    if (!text || !navigator.clipboard || !navigator.clipboard.writeText) {
+      toast.showError('Copy your layout first, then open YACB.', 'Copy failed')
+      return
+    }
+    await navigator.clipboard.writeText(text)
+    toast.showSuccess('Layout copied, paste it in YACB', 'Copied', { duration: 2000 })
+    window.open(YACB_URL, '_blank', 'noopener,noreferrer')
+  } catch (error) {
+    console.error('Error copying layout for YACB:', error)
     toast.showError('Please try again.', 'Copy failed')
   }
 }

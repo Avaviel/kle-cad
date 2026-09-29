@@ -5,7 +5,7 @@ import KeyboardToolbar from '../KeyboardToolbar.vue'
 // Stores are mocked so this spec does not depend on browser storage; it only
 // asserts the companion-link rendering of the toolbar.
 vi.mock('@/stores/keyboard', () => ({
-  useKeyboardStore: () => ({}),
+  useKeyboardStore: () => ({ getSerializedData: () => [{ name: 'yacb-probe' }] }),
 }))
 
 vi.mock('@/stores/auth', () => ({
@@ -66,7 +66,25 @@ describe('KeyboardToolbar YAKB link', () => {
     expect(link.attributes('href')).toBe('https://avaviel.com/YAKB-cad')
     expect(link.attributes('target')).toBe('_blank')
     expect(link.attributes('rel')).toContain('noopener')
-    expect(link.text()).toContain('YAKB')
+    expect(link.text()).toContain('Send to YACB')
+  })
+
+  it('copies the layout and opens YACB on click', async () => {
+    const writeText = vi.fn().mockResolvedValue(undefined)
+    Object.defineProperty(navigator, 'clipboard', { value: { writeText }, configurable: true })
+    const openSpy = vi.spyOn(window, 'open').mockImplementation(() => null)
+
+    await mountToolbar().find('[data-testid="link-yakb-cad"]').trigger('click')
+    await new Promise((resolve) => setTimeout(resolve, 0))
+
+    expect(writeText).toHaveBeenCalledTimes(1)
+    expect(writeText.mock.calls[0]![0]).toContain('yacb-probe')
+    expect(openSpy).toHaveBeenCalledWith(
+      'https://avaviel.com/YAKB-cad',
+      '_blank',
+      'noopener,noreferrer',
+    )
+    openSpy.mockRestore()
   })
 
   it('sits left of Copy in the layout clipboard group', () => {
