@@ -143,7 +143,7 @@ export function ensureZoneMeta(meta: KeyboardMetadata, zone: number): void {
 
 /**
  * kle-serial2 will not emit _z/_zi. After compact serialize, stamp them onto
- * the property object that precedes each Z#.# legend so Copy/YAKB get typed fields.
+ * the property object that precedes each Z#.# legend so Copy/YACB get typed fields.
  */
 export function injectCadCornerProps(data: unknown): unknown {
   if (!Array.isArray(data)) return data
@@ -227,7 +227,7 @@ export function convexHull(points: Point[]): Point[] {
 }
 
 const MM_PER_UNIT = 19.05
-/** YAKB only splits hull edges at least this long (KLE units) when conforming. */
+/** YACB only splits hull edges at least this long (KLE units) when conforming. */
 const CONCAVE_MAX_EDGE_UNITS = 3
 
 function uniquePoints(points: Point[], eps: number): Point[] {
@@ -262,16 +262,16 @@ function pointInPoly(p: Point, poly: Point[]): boolean {
 }
 
 /**
- * YAKB-compatible concave hull: start from the convex hull, then splice
+ * YACB-compatible concave hull: start from the convex hull, then splice
  * walked-in corners back onto the long edges they sit behind. Same insertion
- * rules as YAKB's PlateBuilder so the overlay previews the DXF outline.
+ * rules as YACB's PlateBuilder so the overlay previews the DXF outline.
  * maxEdge is in the same units as the points.
  */
 export function concaveHull(points: Point[], maxEdge: number): Point[] {
   const pxPerUnit = maxEdge / CONCAVE_MAX_EDGE_UNITS
   const deduped = uniquePoints(points, 0.02 * pxPerUnit)
   if (deduped.length <= 2 || !(maxEdge > 0)) return convexHull(deduped)
-  // YAKB-style hull: keep collinear edge points (`< 0`), unlike convexHull above.
+  // YACB-style hull: keep collinear edge points (`< 0`), unlike convexHull above.
   const sorted = [...deduped].sort((a, b) => a.x - b.x || a.y - b.y)
   const build = (list: Point[]): Point[] => {
     const hull: Point[] = []
@@ -350,7 +350,7 @@ function hypot(x: number, y: number): number {
 /**
  * Parallel-offset a closed polygon. Positive distance grows the silhouette
  * (away from the interior). Used so the dashed overlay sits outside the keys
- * the way zone offset mm does in YAKB.
+ * the way zone offset mm does in YACB.
  */
 export function offsetPolygon(points: Point[], distance: number): Point[] {
   const n = points.length
@@ -476,13 +476,62 @@ export function isSimplePolygon(points: Point[]): boolean {
   return true
 }
 
+/**
+ * Order corners into a ring by angle around their centroid. Corner _zi
+ * values record click order, not ring order, so Outer wrap derives the
+ * ring from positions; correct whenever the corners surround their
+ * centroid (the usual module outline). Always simplicity-check the
+ * result: degenerate sets can still self-overlap.
+ */
+export function orderRing(points: Point[]): Point[] {
+  if (points.length < 3) return points.slice()
+  const cx = points.reduce((sum, pt) => sum + pt.x, 0) / points.length
+  const cy = points.reduce((sum, pt) => sum + pt.y, 0) / points.length
+  return [...points].sort((a, b) => {
+    const da = Math.atan2(a.y - cy, a.x - cx)
+    const db = Math.atan2(b.y - cy, b.x - cx)
+    if (da !== db) return da - db
+    const ra = (a.x - cx) * (a.x - cx) + (a.y - cy) * (a.y - cy)
+    const rb = (b.x - cx) * (b.x - cx) + (b.y - cy) * (b.y - cy)
+    return ra - rb
+  })
+}
+
+function perimeter(points: Point[]): number {
+  let total = 0
+  for (let i = 0; i < points.length; i++) {
+    const a = points[i]!
+    const b = points[(i + 1) % points.length]!
+    total += hypot(b.x - a.x, b.y - a.y)
+  }
+  return total
+}
+
 export function buildZoneOutline(points: Point[], settings: ZoneSettings, mmToPx: number): Point[] {
   if (points.length < 2) return points.slice()
   let pts = points.slice()
   if (settings.shape !== 'path' && pts.length >= 3) {
-    // Walked corner order wins when it forms a clean ring, so inside
-    // corners always press in; otherwise wrap the extremes like YAKB.
-    if (!isSimplePolygon(pts)) {
+    // Outer wrap derives the ring from corner positions (_zi is click
+    // order, not ring order). A misordered ring cuts area away with
+    // diagonal shortcuts, so the larger-area simple ring wins; ties
+    // (spikes enclose no area) go to the tighter ring. When neither
+    // order forms a clean ring, wrap the extremes like YACB.
+    const ring = orderRing(pts)
+    const walkedSimple = isSimplePolygon(pts)
+    const ringSimple = isSimplePolygon(ring)
+    if (walkedSimple && ringSimple) {
+      const walkedArea = Math.abs(signedArea(pts))
+      const ringArea = Math.abs(signedArea(ring))
+      const eps = 1e-9 * Math.max(1, walkedArea + ringArea)
+      if (
+        ringArea > walkedArea + eps ||
+        (Math.abs(ringArea - walkedArea) <= eps && perimeter(ring) < perimeter(pts))
+      ) {
+        pts = ring
+      }
+    } else if (ringSimple) {
+      pts = ring
+    } else if (!walkedSimple) {
       pts = concaveHull(pts, CONCAVE_MAX_EDGE_UNITS * MM_PER_UNIT * mmToPx)
     }
   }

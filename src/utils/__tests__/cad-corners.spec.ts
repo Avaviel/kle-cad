@@ -15,6 +15,7 @@ import {
   nextCornerIndex,
   nextNewZone,
   offsetPolygon,
+  orderRing,
   parseCornerLegend,
   roundedPolygonCommands,
   usedZones,
@@ -220,5 +221,79 @@ describe('cad-corners', () => {
     )
     expect(outline.length).toBeGreaterThanOrEqual(4)
     expect(Math.min(...outline.map((p) => p.x))).toBeLessThan(0)
+  })
+
+  it('orderRing sorts click order into a perimeter ring', () => {
+    // Zone-4-like: corners clicked BL, TL, TR, BR, then a mid-left indent.
+    const clicked: ({ x: number; y: number } & { zi: number })[] = [
+      { x: 35, y: 7.75, zi: 0 },
+      { x: 35, y: 3.25, zi: 1 },
+      { x: 38.5, y: 3.25, zi: 2 },
+      { x: 38.5, y: 7.75, zi: 3 },
+      { x: 35.5, y: 5.5, zi: 4 },
+    ]
+    expect(orderRing(clicked).map((pt) => (pt as typeof clicked[number]).zi)).toEqual([1, 2, 3, 0, 4])
+  })
+
+  it('buildZoneOutline follows the larger-area ring, not click order', () => {
+    // Same corners: walked _zi order slashes the indent across the bottom,
+    // but the position-derived ring puts it on the side it was placed on.
+    const clicked = [
+      { x: 35, y: 7.75 },
+      { x: 35, y: 3.25 },
+      { x: 38.5, y: 3.25 },
+      { x: 38.5, y: 7.75 },
+      { x: 35.5, y: 5.5 },
+    ]
+    const outline = buildZoneOutline(
+      clicked,
+      { ...DEFAULT_ZONE_SETTINGS, shape: 'convex', offset: 0, fillet: 0 },
+      1,
+    )
+    expect(outline).toHaveLength(5)
+    const at = (x: number, y: number) => outline.findIndex((pt) => pt.x === x && pt.y === y)
+    const mid = at(35.5, 5.5)
+    expect(mid).toBeGreaterThanOrEqual(0)
+    const neighbours = new Set([
+      `${outline[(mid + outline.length - 1) % outline.length]!.x},${outline[(mid + outline.length - 1) % outline.length]!.y}`,
+      `${outline[(mid + 1) % outline.length]!.x},${outline[(mid + 1) % outline.length]!.y}`,
+    ])
+    expect(neighbours).toEqual(new Set(['35,7.75', '35,3.25']))
+  })
+
+  it('buildZoneOutline keeps every corner of a self-crossing click order', () => {
+    const outline = buildZoneOutline(
+      [
+        { x: 0, y: 0 },
+        { x: 10, y: 10 },
+        { x: 10, y: 0 },
+        { x: 0, y: 10 },
+      ],
+      { ...DEFAULT_ZONE_SETTINGS, shape: 'convex', offset: 0, fillet: 0 },
+      1,
+    )
+    expect(outline).toHaveLength(4)
+    expect(isSimplePolygon(outline)).toBe(true)
+    const coords = new Set(outline.map((pt) => `${pt.x},${pt.y}`))
+    expect(coords).toEqual(new Set(['0,0', '10,10', '10,0', '0,10']))
+  })
+
+  it('buildZoneOutline survives degenerate collinear corners via the hull', () => {
+    const clicked = [
+      { x: 0, y: 0 },
+      { x: 10, y: 0 },
+      { x: 5, y: 0 },
+      { x: 7, y: 0 },
+    ]
+    const outline = buildZoneOutline(
+      clicked,
+      { ...DEFAULT_ZONE_SETTINGS, shape: 'convex', offset: 0, fillet: 0 },
+      1,
+    )
+    expect(outline.length).toBeGreaterThanOrEqual(2)
+    for (const pt of outline) {
+      expect(clicked.some((c) => c.x === pt.x && c.y === pt.y)).toBe(true)
+      expect(Number.isFinite(pt.x) && Number.isFinite(pt.y)).toBe(true)
+    }
   })
 })
