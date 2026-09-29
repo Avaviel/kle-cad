@@ -4,9 +4,9 @@
 // and VITE_GIT_COMMIT_SHA. The production GitHub Pages build leaves both unset, so it
 // resolves to 'production'.
 
-export const GITHUB_REPO_URL = 'https://github.com/Avaviel/kle-ng'
+export const GITHUB_REPO_URL = 'https://github.com/Avaviel/kle-cad'
 // URL to link to from a preview build so users can get to the production site
-export const PRODUCTION_URL = 'https://avaviel.github.io/kle-ng/'
+export const PRODUCTION_URL = 'https://avaviel.github.io/kle-cad/'
 
 export type DeploymentEnv = 'local' | 'preview' | 'production'
 

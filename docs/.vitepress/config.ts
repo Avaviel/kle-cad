@@ -80,11 +80,11 @@ export default defineConfig({
     },
 
     editLink: {
-      pattern: 'https://github.com/Avaviel/kle-ng/edit/master/docs/:path',
+      pattern: 'https://github.com/Avaviel/kle-cad/edit/master/docs/:path',
       text: 'Edit this page on GitHub',
     },
 
-    socialLinks: [{ icon: 'github', link: 'https://github.com/Avaviel/kle-ng' }],
+    socialLinks: [{ icon: 'github', link: 'https://github.com/Avaviel/kle-cad' }],
 
     footer: {
       message: 'Released under the MIT License.',

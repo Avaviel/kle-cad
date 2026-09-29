@@ -352,7 +352,7 @@ const isLayoutEditorSettingsOpen = ref(false)
     <div v-if="isPreviewDeployment" class="preview-banner border-bottom px-3 py-2 text-center">
       This is a <strong>preview</strong> build from an unreleased commit &mdash; features may be
       incomplete or broken. For the stable editor go to
-      <a :href="PRODUCTION_URL">avaviel.github.io/kle-ng</a>.
+      <a :href="PRODUCTION_URL">avaviel.github.io/kle-cad</a>.
     </div>
 
     <!-- Touch/mobile visitors: many editing gestures are mouse/keyboard-only -->

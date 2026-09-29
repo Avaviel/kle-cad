@@ -30,11 +30,11 @@
         </div>
         <div class="col-md-6 text-end">
           <div class="footer-links">
-            <a href="https://github.com/Avaviel/kle-ng" target="_blank" class="text-decoration-none">
+            <a href="https://github.com/Avaviel/kle-cad" target="_blank" class="text-decoration-none">
               Project GitHub</a
             ><br />
             <a
-              href="https://avaviel.github.io/kle-ng/about.html"
+              href="https://avaviel.github.io/kle-cad/about.html"
               target="_blank"
               class="text-decoration-none"
               data-testid="footer-how-it-works"
@@ -42,7 +42,7 @@
               How it works</a
             ><br />
             <a
-              href="https://github.com/Avaviel/kle-ng/issues"
+              href="https://github.com/Avaviel/kle-cad/issues"
               target="_blank"
               class="text-decoration-none"
             >

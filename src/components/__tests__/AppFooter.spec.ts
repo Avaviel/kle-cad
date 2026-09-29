@@ -4,7 +4,7 @@ import { describe, it, expect } from 'vitest'
 import { mount } from '@vue/test-utils'
 import AppFooter from '../AppFooter.vue'
 
-const ABOUT_URL = 'https://avaviel.github.io/kle-ng/about.html'
+const ABOUT_URL = 'https://avaviel.github.io/kle-cad/about.html'
 
 const aboutHtml = () =>
   readFileSync(join(process.cwd(), 'public/about.html'), 'utf-8')
@@ -22,8 +22,8 @@ describe('AppFooter How it works', () => {
     expect(html).toContain('https://avaviel.com/kle-cad')
     expect(html).toContain('https://avaviel.com/yacb')
     expect(html).toContain('https://youtube.com/@avaviel')
-    expect(html).toContain('https://avaviel.github.io/kle-ng')
-    expect(html).toContain('https://avaviel.github.io/YAKB-cad-helper-addons')
+    expect(html).toContain('https://avaviel.github.io/kle-cad')
+    expect(html).toContain('https://avaviel.github.io/yacb')
     expect(html).toContain('Fusion 360')
     expect(html).toContain('KLE-CAD')
     expect(html).toContain('YACB')
