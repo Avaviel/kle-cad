@@ -439,7 +439,17 @@ const pasteLayout = async () => {
     toast.showSuccess('Layout JSON pasted', 'Pasted', { duration: 2000 })
   } catch (error) {
     console.error('Error pasting layout JSON:', error)
-    const message = error instanceof Error ? error.message : 'Clipboard is not valid layout JSON'
+    // Browsers gate clipboard reads behind a permission that can deny
+    // without prompting; point at the manual fallback instead of the
+    // raw DOMException text.
+    // Read name/message structurally: a real DOMException is not an instanceof Error.
+    const failure = error as { name?: unknown; message?: unknown } | null | undefined
+    const message =
+      failure?.name === 'NotAllowedError'
+        ? 'Browser blocked clipboard access \u2014 paste into the JSON panel instead.'
+        : typeof failure?.message === 'string' && failure.message
+          ? failure.message
+          : 'Clipboard is not valid layout JSON'
     toast.showError(message, 'Paste failed')
   }
 }
