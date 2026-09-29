@@ -4,4 +4,4 @@ Allow: /
 Disallow: /data/presets/
 Disallow: /data/footprints/
 
-Sitemap: https://editor.keyboard-tools.xyz/sitemap.xml
+Sitemap: https://avaviel.github.io/kle-cad/sitemap.xml
