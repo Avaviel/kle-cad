@@ -1,8 +1,8 @@
 <template>
   <div class="modules-panel">
     <p class="text-muted small mb-3">
-      Each module is one plate island — a half, numpad block, or other extra. The name is saved in
-      the JSON as <code>_zones.N.name</code> so Copy / Paste keeps it. Outline offset grows the
+      Each module is one plate island: a half, a numpad block, or an extra. The name is saved in
+      the JSON as <code>_zones.N.name</code>, so Copy / Paste keeps it. Outline offset grows the
       silhouette from the corner markers (0 looks inset). Rounding fillets the outline.
     </p>
 
