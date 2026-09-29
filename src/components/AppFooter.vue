@@ -34,6 +34,14 @@
               Project GitHub</a
             ><br />
             <a
+              href="https://avaviel.github.io/kle-ng/about.html"
+              target="_blank"
+              class="text-decoration-none"
+              data-testid="footer-how-it-works"
+            >
+              How it works</a
+            ><br />
+            <a
               href="https://github.com/Avaviel/kle-ng/issues"
               target="_blank"
               class="text-decoration-none"
