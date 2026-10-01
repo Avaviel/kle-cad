@@ -297,7 +297,7 @@ describe('cad-corners', () => {
     }
   })
 
-  it('offsetPolygon bevels needle corners instead of spiking', () => {
+  it('offsetPolygon rounds needle corners instead of spiking', () => {
     // 19-degree apex: a raw miter would spike 6x the offset off the tip.
     const grown = offsetPolygon(
       [
@@ -307,9 +307,14 @@ describe('cad-corners', () => {
       ],
       1,
     )
-    // Bevel replaces the apex miter with two flat points, base miters stay.
-    expect(grown).toHaveLength(4)
+    // Round join replaces the apex miter with an arc; base miters stay.
+    expect(grown.length).toBeGreaterThan(4)
     expect(Math.max(...grown.map((pt) => pt.y))).toBeLessThan(5)
+    const arc = grown.filter((pt) => pt.y > 2.5)
+    expect(arc.length).toBeGreaterThanOrEqual(3)
+    for (const pt of arc) {
+      expect(Math.hypot(pt.x - 0.5, pt.y - 3)).toBeCloseTo(1, 6)
+    }
     for (const pt of grown) {
       expect(Number.isFinite(pt.x) && Number.isFinite(pt.y)).toBe(true)
     }
