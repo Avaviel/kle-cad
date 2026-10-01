@@ -297,8 +297,10 @@ describe('cad-corners', () => {
     }
   })
 
-  it('offsetPolygon rounds needle corners instead of spiking', () => {
+  it('offsetPolygon caps needle miters at 2x the offset', () => {
     // 19-degree apex: a raw miter would spike 6x the offset off the tip.
+    // One uniform rule (no join threshold): cap every miter at 2x so
+    // near-identical corners on either side of a dip render the same.
     const grown = offsetPolygon(
       [
         { x: 0, y: 0 },
@@ -307,14 +309,11 @@ describe('cad-corners', () => {
       ],
       1,
     )
-    // Round join replaces the apex miter with an arc; base miters stay.
-    expect(grown.length).toBeGreaterThan(4)
-    expect(Math.max(...grown.map((pt) => pt.y))).toBeLessThan(5)
-    const arc = grown.filter((pt) => pt.y > 2.5)
-    expect(arc.length).toBeGreaterThanOrEqual(3)
-    for (const pt of arc) {
-      expect(Math.hypot(pt.x - 0.5, pt.y - 3)).toBeCloseTo(1, 6)
-    }
+    expect(grown).toHaveLength(3)
+    const apex = grown.find((pt) => pt.y > 4)
+    expect(apex).toBeDefined()
+    expect(apex!.x).toBeCloseTo(0.5, 9)
+    expect(apex!.y).toBeCloseTo(5, 9)
     for (const pt of grown) {
       expect(Number.isFinite(pt.x) && Number.isFinite(pt.y)).toBe(true)
     }
@@ -333,5 +332,27 @@ describe('cad-corners', () => {
     expect(grown).toHaveLength(4)
     const coords = new Set(grown.map((pt) => `${pt.x},${pt.y}`))
     expect(coords).toEqual(new Set(['-1,-1', '11,-1', '11,11', '-1,11']))
+  })
+
+  it('offsetPolygon renders both dip mouths the same way', () => {
+    // Dip mouth corners at 57 and 63 degrees: near-identical corners
+    // must take the same join, not round one side and miter the other.
+    const ring = [
+      { x: 20.25, y: 1.0 },
+      { x: 21.25, y: 1.5 },
+      { x: 22.25, y: 1.0 },
+      { x: 22.0, y: 3.25 },
+      { x: 22.25, y: 5.25 },
+      { x: 20.25, y: 5.25 },
+    ]
+    const grown = offsetPolygon(ring, 16 / 19.05)
+    // One vertex per corner: no arc fan-out on either mouth.
+    expect(grown).toHaveLength(6)
+    const nearest = (x: number, y: number) =>
+      grown.reduce((best, pt) => Math.min(best, Math.hypot(pt.x - x, pt.y - y)), Infinity)
+    const left = nearest(20.25, 1.0)
+    const right = nearest(22.25, 1.0)
+    expect(right / left).toBeGreaterThan(0.9)
+    expect(right / left).toBeLessThan(1.1)
   })
 })

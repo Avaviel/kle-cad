@@ -382,34 +382,15 @@ export function offsetPolygon(points: Point[], distance: number): Point[] {
     }
     bx /= bLen
     by /= bLen
-    // Miter limit: an acute corner would spike far off the outline, so
-    // join it with a round arc instead of a miter. Round (not bevel):
-    // a flat cut zigzags against adjacent dips, an arc stays smooth.
+    // One uniform rule, no join threshold: miter every corner, capped
+    // at 2x the offset. A threshold (bevel/round past some angle) makes
+    // near-identical corners straddling it render differently; a cap
+    // keeps them continuous and symmetric while bounding spikes.
     // Mirrored in YACB's offsetPolygon so DXF matches the overlay.
     const cosRaw = bx * n1x + by * n1y
-    if (cosRaw < 0.5) {
-      const radius = Math.abs(distance)
-      const flip = distance < 0 ? Math.PI : 0
-      const a1 = Math.atan2(n1y, n1x) + flip
-      const mid = Math.atan2(by, bx) + flip
-      const a2 = Math.atan2(n2y, n2x) + flip
-      let sweep = a2 - a1
-      while (sweep > Math.PI) sweep -= 2 * Math.PI
-      while (sweep < -Math.PI) sweep += 2 * Math.PI
-      let toMid = mid - a1
-      while (toMid > Math.PI) toMid -= 2 * Math.PI
-      while (toMid < -Math.PI) toMid += 2 * Math.PI
-      if (Math.abs(toMid) > 1e-9 && sweep > 0 !== toMid > 0) {
-        sweep += sweep > 0 ? -2 * Math.PI : 2 * Math.PI
-      }
-      const segs = Math.max(2, Math.ceil(Math.abs(sweep) / (Math.PI / 8)))
-      for (let k = 0; k <= segs; k++) {
-        const a = a1 + (sweep * k) / segs
-        out.push({ x: cur.x + Math.cos(a) * radius, y: cur.y + Math.sin(a) * radius })
-      }
-      continue
-    }
-    const scale = distance / cosRaw
+    const miterLen = Math.abs(distance) / Math.max(cosRaw, 1e-9)
+    const capped = Math.min(miterLen, 2 * Math.abs(distance))
+    const scale = distance < 0 ? -capped : capped
     out.push({ x: cur.x + bx * scale, y: cur.y + by * scale })
   }
   return out
