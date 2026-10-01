@@ -17,3 +17,15 @@ describe('seo files point at our own site', () => {
     expect(sitemap).not.toContain('keyboard-tools.xyz');
   });
 });
+
+describe('about page links escape the dub iframe cloak', () => {
+  it('opens every link in a new window', () => {
+    const about = readFileSync('public/about.html', 'utf8');
+    const anchors = about.match(/<a\s[^>]*>/g) || [];
+    expect(anchors.length).toBeGreaterThan(0);
+    for (const tag of anchors) {
+      expect(tag).toContain('target="_blank"');
+      expect(tag).toContain('rel="noopener noreferrer"');
+    }
+  });
+});
